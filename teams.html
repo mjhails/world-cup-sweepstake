@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>My Teams</title>
+
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="hero">
+
+<h1>⚽ My Teams</h1>
+
+<div id="playerProfile"></div>
+
+<h2 id="drawText">
+🎲 Drawing your teams...
+</h2>
+
+<div id="summary"></div>
+
+<div id="teams"></div>
+
+<br>
+
+<a href="index.html">
+← Home
+</a>
+
+</div>
+
+<script src="app.js"></script>
+
+<script>
+
+const params =
+new URLSearchParams(
+window.location.search
+);
+
+const playerName =
+params.get("player");
+
+loadData().then(data => {
+
+loadLocalTournamentData();
+
+if(tournamentData){
+
+data = tournamentData;
+
+}
+
+const player =
+getPlayer(playerName);
+
+if(!player){
+
+document
+.getElementById("teams")
+.innerHTML =
+"<h2>Player not found</h2>";
+
+return;
+
+}
+
+buildProfile(player);
+
+buildSummary(player);
+
+const revealed =
+localStorage.getItem(
+`revealed-${playerName}`
+);
+
+if(revealed){
+
+showAllTeams(player);
+
+}else{
+
+animateReveal(player);
+
+}
+
+});
+
+function buildProfile(player){
+
+const photo =
+getProfilePhoto(player.name);
+
+let html = "";
+
+if(photo){
+
+html += `
+<img
+src="${photo}"
+class="profile-photo">
+`;
+
+}
+
+html += `
+
+<h2>
+${player.name}
+</h2>
+
+<input
+type="file"
+accept="image/*"
+onchange="uploadPhoto(event,'${player.name}')">
+
+`;
+
+document
+.getElementById(
+"playerProfile"
+)
+.innerHTML = html;
+
+}
+
+function uploadPhoto(
+event,
+playerName
+){
+
+const file =
+event.target.files[0];
+
+if(!file) return;
+
+const reader =
+new FileReader();
+
+reader.onload =
+function(e){
+
+saveProfilePhoto(
+playerName,
+e.target.result
+);
+
+location.reload();
+
+};
+
+reader.readAsDataURL(file);
+
+}
+
+function buildSummary(player){
+
+const active =
+player.teams.filter(
+team =>
+team.status !==
+"🔴 Eliminated"
+).length;
+
+let bestTeam =
+"None";
+
+let bestScore =
+0;
+
+player.teams.forEach(team=>{
+
+const score =
+getStatusScore(
+team.status
+);
+
+if(score > bestScore){
+
+bestScore = score;
+
+bestTeam =
+`${team.flag} ${team.name}`;
+
+}
+
+});
+
+document
+.getElementById(
+"summary"
+)
+.innerHTML = `
+
+<div class="admin-section">
+
+<h3>
+📊 Team Summary
+</h3>
+
+<p>
+Active Teams:
+${active}
+</p>
+
+<p>
+Best Team:
+${bestTeam}
+</p>
+
+</div>
+
+`;
+
+}
+
+function showAllTeams(player){
+
+document
+.getElementById(
+"drawText"
+)
+.innerHTML =
+`Welcome back ${player.name} 👋`;
+
+player.teams.forEach(team=>{
+
+addTeamCard(team);
+
+});
+
+}
+
+function animateReveal(player){
+
+let current = 0;
+
+function reveal(){
+
+if(
+current >=
+player.teams.length
+){
+
+document
+.getElementById(
+"drawText"
+)
+.innerHTML =
+"🏆 Teams Revealed";
+
+localStorage.setItem(
+`revealed-${player.name}`,
+"true"
+);
+
+return;
+
+}
+
+addTeamCard(
+player.teams[current],
+true
+);
+
+current++;
+
+setTimeout(
+reveal,
+1200
+);
+
+}
+
+reveal();
+
+}
+
+function addTeamCard(
+team,
+animate = false
+){
+
+const card =
+document.createElement("div");
+
+card.className =
+animate
+? "team-card reveal"
+: "team-card";
+
+card.innerHTML = `
+
+<div class="flag">
+
+${team.flag}
+
+</div>
+
+<div>
+
+<h3>
+${team.name}
+</h3>
+
+<div class="status">
+${team.status}
+</div>
+
+</div>
+
+`;
+
+document
+.getElementById(
+"teams"
+)
+.appendChild(card);
+
+}
+
+</script>
+
+</body>
+
+</html>

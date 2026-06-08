@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Team Ownership</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<div class="hero">
+
+<h1>📋 Team Ownership</h1>
+
+<p>
+See who owns each team and their tournament status
+</p>
+
+<div id="ownershipList">
+
+Loading...
+
+</div>
+
+<br>
+
+<a href="index.html">
+← Home
+</a>
+
+</div>
+
+<script src="app.js"></script>
+
+<script>
+
+loadData().then(data=>{
+
+loadLocalTournamentData();
+
+if(tournamentData){
+
+data = tournamentData;
+
+}
+
+let teams = [];
+
+data.players.forEach(player=>{
+
+player.teams.forEach(team=>{
+
+teams.push({
+
+team:team.name,
+flag:team.flag,
+group:team.group || "-",
+status:team.status || "🟢 Active",
+owner:player.name
+
+});
+
+});
+
+});
+
+teams.sort((a,b)=>
+a.team.localeCompare(b.team)
+);
+
+let html = "";
+
+teams.forEach(item=>{
+
+html += `
+
+<div class="team-card">
+
+<div style="flex:1;text-align:left;">
+
+<h3>
+
+${item.flag}
+${item.team}
+
+</h3>
+
+<p>
+
+Group:
+<strong>
+${item.group}
+</strong>
+
+</p>
+
+<p>
+
+Status:
+<strong>
+${item.status}
+</strong>
+
+</p>
+
+</div>
+
+<div>
+
+<strong>
+
+${item.owner}
+
+</strong>
+
+</div>
+
+</div>
+
+`;
+
+});
+
+document.getElementById(
+"ownershipList"
+).innerHTML = html;
+
+});
+
+</script>
+
+</body>
+
+</html>

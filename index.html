@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Hails vs Palmers World Cup Sweepstake 2026</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<div class="hero">
+
+<h1>🏆 Hails vs Palmers World Cup Sweepstake 2026</h1>
+
+<p>
+The battle is on...
+</p>
+
+<p>
+One tournament. One draw.
+Endless family banter.
+</p>
+
+<br>
+
+<input
+type="text"
+id="playerName"
+placeholder="Enter your name">
+
+<br><br>
+
+<button onclick="findTeams()">
+⚽ Find My Teams
+</button>
+
+<br><br>
+
+<div class="admin-section">
+
+<h2>📢 Tournament Update</h2>
+
+<p id="tournamentMessage">
+Welcome to the sweepstake!
+</p>
+
+</div>
+
+<br>
+
+<div class="admin-section">
+
+<h2>🌍 Explore</h2>
+
+<p>
+<a href="ownership.html">
+📋 Team Ownership
+</a>
+</p>
+
+<p>
+<a href="winner.html">
+🏆 Tournament Standings
+</a>
+</p>
+
+<p>
+<a href="#" onclick="openAdmin()">
+🔒 Admin Dashboard
+</a>
+</p>
+
+</div>
+
+<br>
+
+<div class="admin-section">
+
+<h2>🔥 Family Rivalry</h2>
+
+<p>
+Can the Hails finally beat the Palmers?
+</p>
+
+<p>
+Every team matters.
+Every match matters.
+Every bit of family banter matters.
+</p>
+
+</div>
+
+</div>
+
+<script>
+
+function findTeams(){
+
+const player =
+document
+.getElementById("playerName")
+.value
+.trim();
+
+if(player === ""){
+
+alert(
+"Please enter your name"
+);
+
+return;
+
+}
+
+window.location.href =
+`teams.html?player=${encodeURIComponent(player)}`;
+
+}
+
+function openAdmin(){
+
+const password =
+prompt(
+"Enter Admin Password"
+);
+
+if(password === "Admin2026"){
+
+window.location.href =
+"admin.html";
+
+}else{
+
+alert(
+"Incorrect Password"
+);
+
+}
+
+}
+
+fetch("data.json")
+.then(response => response.json())
+.then(data => {
+
+if(data.tournamentMessage){
+
+document
+.getElementById(
+"tournamentMessage"
+).innerText =
+data.tournamentMessage;
+
+}
+
+})
+.catch(error => {
+
+console.log(
+"Unable to load tournament message",
+error
+);
+
+});
+
+</script>
+
+</body>
+
+</html>

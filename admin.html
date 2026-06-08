@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Admin Dashboard</title>
+
+<link rel="stylesheet" href="style.css">
+
+<style>
+
+.status-row{
+display:flex;
+justify-content:space-between;
+align-items:center;
+gap:10px;
+margin-bottom:10px;
+background:#1e293b;
+padding:10px;
+border-radius:10px;
+}
+
+.status-row select{
+max-width:220px;
+margin:0;
+}
+
+.player-result{
+background:#1e293b;
+padding:15px;
+margin-bottom:15px;
+border-radius:12px;
+}
+
+#drawButton:disabled{
+opacity:.6;
+cursor:not-allowed;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="hero">
+
+<h1>🔒 Admin Dashboard</h1>
+
+<p>Tournament Director Controls</p>
+
+<div class="admin-section">
+
+<h2>👨‍👩‍👧‍👦 Participants</h2>
+
+<p>
+Enter one participant per line
+</p>
+
+<textarea
+id="participants"
+rows="10"
+placeholder="Mike&#10;Sarah&#10;Tom">
+</textarea>
+
+<button
+id="drawButton"
+onclick="generateTournamentDraw()">
+🎲 Generate Draw
+</button>
+
+</div>
+
+<div class="admin-section">
+
+<h2>📢 Tournament Message</h2>
+
+<textarea
+id="tournamentMessage"
+rows="4"
+placeholder="Tournament update...">
+</textarea>
+
+<button onclick="saveMessage()">
+💾 Save Message
+</button>
+
+</div>
+
+<div class="admin-section">
+
+<h2>🏆 Generated Draw</h2>
+
+<div id="drawOutput">
+
+No draw generated yet.
+
+</div>
+
+</div>
+
+<div class="admin-section">
+
+<h2>⚽ Team Status Manager</h2>
+
+<div id="statusManager">
+
+Loading teams...
+
+</div>
+
+</div>
+
+<div class="admin-section">
+
+<h2>💾 Tournament Controls</h2>
+
+<button onclick="saveTournament()">
+💾 Save Tournament
+</button>
+
+<button onclick="unlockDraw()">
+🔓 Unlock Draw
+</button>
+
+<button onclick="downloadDataFile()">
+📥 Download data.json
+</button>
+
+</div>
+
+<br>
+
+<a href="index.html">
+← Home
+</a>
+
+</div>
+
+<script src="app.js"></script>
+
+<script>
+
+loadData().then(data=>{
+
+loadLocalTournamentData();
+
+if(tournamentData){
+
+data = tournamentData;
+
+}
+
+document.getElementById(
+"tournamentMessage"
+).value =
+data.tournamentMessage || "";
+
+buildStatusManager(data);
+
+if(data.drawLocked){
+
+const button =
+document.getElementById(
+"drawButton"
+);
+
+button.innerHTML =
+"🔒 Draw Locked";
+
+button.disabled = true;
+
+}
+
+if(
+data.players &&
+data.players.length > 0
+){
+
+renderDraw(data.players);
+
+}
+
+});
+
+function generateTournamentDraw(){
+
+loadData().then(data=>{
+
+const names =
+document
+.getElementById("participants")
+.value
+.split("\n")
+.map(name=>name.trim())
+.filter(name=>name);
+
+if(names.length < 2){
+
+alert(
+"Please enter at least 2 participants"
+);
+
+return;
+
+}
+
+const players =
+names.map(name=>({
+
+name:name,
+photo:"",
+teams:[]
+
+}));
+
+const teams =
+data.teams.map(team=>({
+
+name:team.name,
+flag:team.flag,
+group:team.group,
+status:"🟢 Active"
+
+}));
+generateDraw(
+players,
+teams
+);
+
+tournamentData = data;
+
+tournamentData.players =
+players;
+
+tournamentData.drawLocked =
+true;
+
+renderDraw(players);
+
+saveLocalTournamentData();
+
+document.getElementById(
+"drawButton"
+).innerHTML =
+"🔒 Draw Locked";
+
+document.getElementById(
+"drawButton"
+).disabled =
+true;
+
+alert(
+"Official draw generated and locked!"
+);
+
+});
+
+}
+
+function renderDraw(players){
+
+let html = "";
+
+players.forEach(player=>{
+
+html += `
+
+<div class="player-result">
+
+<h3>${player.name}</h3>
+
+`;
+
+player.teams.forEach(team=>{
+
+html += `
+
+<div>
+
+${team.flag}
+${team.name}
+
+(Group ${team.group})
+
+</div>
+
+`;
+
+});
+
+html += `
+
+</div>
+
+`;
+
+});
+
+document.getElementById(
+"drawOutput"
+).innerHTML = html;
+
+}
+
+function saveMessage(){
+
+if(!tournamentData){
+
+alert(
+"Generate a draw first"
+);
+
+return;
+
+}
+
+tournamentData.tournamentMessage =
+document.getElementById(
+"tournamentMessage"
+).value;
+
+saveLocalTournamentData();
+
+alert(
+"Message saved"
+);
+
+}
+
+function buildStatusManager(data){
+
+let currentStatuses = {};
+
+if(
+tournamentData &&
+tournamentData.players
+){
+
+tournamentData.players.forEach(player=>{
+
+player.teams.forEach(team=>{
+
+currentStatuses[team.name] =
+team.status;
+
+});
+
+});
+
+}
+
+let html = "";
+
+data.teams.forEach(team=>{
+
+const selectedStatus =
+currentStatuses[team.name] ||
+"🟢 Active";
+
+html += `
+
+<div class="status-row">
+
+<div>
+
+${team.flag}
+${team.name}
+
+(Group ${team.group})
+
+</div>
+
+<select
+id="status-${team.name}">
+
+${data.statuses.map(status=>`
+
+<option
+value="${status}"
+${status === selectedStatus
+? "selected"
+: ""
+}
+>
+
+${status}
+
+</option>
+
+`).join("")}
+
+</select>
+
+</div>
+
+`;
+
+});
+
+document.getElementById(
+"statusManager"
+).innerHTML = html;
+
+}
+
+function saveTournament(){
+
+if(!tournamentData){
+
+alert(
+"Generate draw first"
+);
+
+return;
+
+}
+
+tournamentData.tournamentMessage =
+document.getElementById(
+"tournamentMessage"
+).value;
+
+const statusMap = {};
+
+tournamentData.teams.forEach(team=>{
+
+const select =
+document.getElementById(
+`status-${team.name}`
+);
+
+if(select){
+
+statusMap[team.name] =
+select.value;
+
+}
+
+});
+tournamentData.players.forEach(player=>{
+
+player.teams.forEach(team=>{
+
+if(statusMap[team.name]){
+
+team.status =
+statusMap[team.name];
+
+}
+
+});
+
+});
+
+saveLocalTournamentData();
+
+alert(
+"Tournament saved successfully"
+);
+
+}
+
+function unlockDraw(){
+
+const confirmUnlock =
+confirm(
+"Unlock draw and allow a redraw?"
+);
+
+if(!confirmUnlock){
+
+return;
+
+}
+
+tournamentData.drawLocked =
+false;
+
+saveLocalTournamentData();
+
+const button =
+document.getElementById(
+"drawButton"
+);
+
+button.disabled =
+false;
+
+button.innerHTML =
+"🎲 Generate Draw";
+
+alert(
+"Draw unlocked successfully"
+);
+
+}
+
+function downloadDataFile(){
+
+if(!tournamentData){
+
+alert(
+"Generate draw first"
+);
+
+return;
+
+}
+
+const json =
+JSON.stringify(
+tournamentData,
+null,
+2
+);
+
+const blob =
+new Blob(
+[json],
+{
+type:"application/json"
+}
+);
+
+const url =
+URL.createObjectURL(blob);
+
+const a =
+document.createElement("a");
+
+a.href = url;
+
+a.download =
+"data.json";
+
+document.body.appendChild(a);
+
+a.click();
+
+document.body.removeChild(a);
+
+URL.revokeObjectURL(url);
+
+}
+
+</script>
+
+</body>
+
+</html>
