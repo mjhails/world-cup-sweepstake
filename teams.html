@@ -74,20 +74,7 @@ buildProfile(player);
 
 buildSummary(player);
 
-const revealed =
-localStorage.getItem(
-`revealed-${playerName}`
-);
-
-if(revealed){
-
 showAllTeams(player);
-
-}else{
-
-animateReveal(player);
-
-}
 
 });
 
