@@ -1,1 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
 
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fixtures</title>
+
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="hero">
+
+<h1>📅 Group Stage Fixtures</h1>
+
+<div id="fixtures"></div>
+
+<br>
+
+<a href="index.html">← Home</a>
+
+</div>
+
+<script src="app.js"></script>
+
+<script>
+
+let data = null;
+
+loadData().then(d => {
+
+data = d;
+
+// build lookup map (team → player)
+const teamOwner = {};
+
+data.players.forEach(p => {
+    p.teams.forEach(t => {
+        teamOwner[t.name] = p.name;
+    });
+});
+
+// fixtures grouped by date
+const fixtures = [
+
+{
+date: "Thursday 11 June",
+matches: [
+["England","Ghana","16:00"],
+["Brazil","Morocco","19:00"]
+]
+},
+
+{
+date: "Friday 12 June",
+matches: [
+["USA","Australia","20:00"],
+["France","Senegal","22:00"]
+]
+}
+
+];
+
+let html = "";
+
+fixtures.forEach(day => {
+
+html += `<h2>📅 ${day.date}</h2>`;
+
+day.matches.forEach(m => {
+
+const homeOwner = teamOwner[m[0]] || "";
+const awayOwner = teamOwner[m[1]] || "";
+
+html += `
+<div class="team-card">
+
+<h3>${m[2]} UK Time</h3>
+
+<p>
+⚽ ${m[0]} (${homeOwner})
+vs
+${m[1]} (${awayOwner})
+</p>
+
+</div>
+`;
+
+});
+
+});
+
+document.getElementById("fixtures").innerHTML = html;
+
+});
+
+</script>
+
+</body>
+</html>
