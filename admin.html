@@ -40,6 +40,13 @@ opacity:.6;
 cursor:not-allowed;
 }
 
+#saveStatus{
+display:inline-block;
+margin-left:10px;
+font-size:0.9em;
+color:#86efac;
+}
+
 </style>
 
 </head>
@@ -56,9 +63,7 @@ cursor:not-allowed;
 
 <h2>👨‍👩‍👧‍👦 Participants</h2>
 
-<p>
-Enter one participant per line
-</p>
+<p>Enter one participant per line</p>
 
 <textarea
 id="participants"
@@ -95,9 +100,7 @@ placeholder="Tournament update...">
 <h2>🏆 Generated Draw</h2>
 
 <div id="drawOutput">
-
 No draw generated yet.
-
 </div>
 
 </div>
@@ -107,9 +110,7 @@ No draw generated yet.
 <h2>⚽ Team Status Manager</h2>
 
 <div id="statusManager">
-
 Loading teams...
-
 </div>
 
 </div>
@@ -121,6 +122,9 @@ Loading teams...
 <button onclick="saveTournament()">
 💾 Save Tournament
 </button>
+<span id="saveStatus"></span>
+
+<br><br>
 
 <button onclick="unlockDraw()">
 🔓 Unlock Draw
@@ -134,416 +138,359 @@ Loading teams...
 
 <br>
 
-<a href="index.html">
-← Home
-</a>
+<a href="index.html">← Home</a>
 
 </div>
 
-<script src="app.js"></script>
+<script type="module">
 
-<script>
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-loadData().then(data=>{
+const firebaseConfig = {
+  apiKey: "AIzaSyBmVb4vdoCJQg5uFC-yGogjKZzIsdhWZRY",
+  authDomain: "world-cup-sweepstake-202-d2993.firebaseapp.com",
+  projectId: "world-cup-sweepstake-202-d2993",
+  storageBucket: "world-cup-sweepstake-202-d2993.firebasestorage.app",
+  messagingSenderId: "417434337725",
+  appId: "1:417434337725:web:7728561dc86974fee152d4",
+  measurementId: "G-1YZKQ5ZT64"
+};
 
-loadLocalTournamentData();
+const firebaseApp = initializeApp(firebaseConfig);
+const db = getFirestore(firebaseApp);
 
-if(tournamentData){
+let tournamentData = null;
 
-data = tournamentData;
+// ----------------------
+// Load Data
+// ----------------------
+
+async function loadData() {
+
+    try {
+
+        const docRef = doc(db, "tournament", "data");
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+            tournamentData = docSnap.data();
+            return tournamentData;
+        }
+
+    } catch (error) {
+        console.log("Firebase unavailable, falling back to data.json", error);
+    }
+
+    const response = await fetch("data.json");
+    tournamentData = await response.json();
+    return tournamentData;
 
 }
 
-document.getElementById(
-"tournamentMessage"
-).value =
-data.tournamentMessage || "";
+// ----------------------
+// Save to Firebase
+// ----------------------
 
-buildStatusManager(data);
+async function saveToFirebase() {
 
-if(data.drawLocked){
+    if (!tournamentData) return;
 
-const button =
-document.getElementById(
-"drawButton"
-);
-
-button.innerHTML =
-"🔒 Draw Locked";
-
-button.disabled = true;
+    const docRef = doc(db, "tournament", "data");
+    await setDoc(docRef, tournamentData);
 
 }
 
-if(
-data.players &&
-data.players.length > 0
-){
+// ----------------------
+// Helper functions
+// ----------------------
 
-renderDraw(data.players);
+function getStatusScore(status) {
+    switch(status){
+        case "🏆 Champion":      return 100;
+        case "⭐ Finalist":      return 90;
+        case "🟣 Semi Final":    return 80;
+        case "🔵 Quarter Final": return 70;
+        case "🟠 Last 16":       return 60;
+        case "🟡 Last 32":       return 50;
+        case "🟢 Active":        return 40;
+        default:                 return 0;
+    }
+}
+
+function shuffle(array){
+    for(let i=array.length-1; i>0; i--){
+        const j = Math.floor(Math.random() * (i+1));
+        [array[i],array[j]] = [array[j],array[i]];
+    }
+    return array;
+}
+
+function generateDraw(players, teams){
+
+    players.forEach(player=>{ player.teams = []; });
+
+    const pot1 = ["Argentina","France","Brazil","Spain","England","Portugal","Germany","Netherlands","Belgium","Croatia","Uruguay","Morocco"];
+    const pot2 = ["United States","Mexico","Japan","Switzerland","Colombia","Senegal","South Korea","Ecuador","Norway","Sweden","Paraguay","Türkiye"];
+    const pot3 = ["Canada","Austria","Ghana","Egypt","Algeria","Tunisia","Ivory Coast","Panama","Scotland","Australia","Qatar","Saudi Arabia"];
+    const pot4 = ["Bosnia and Herzegovina","Cape Verde","Curaçao","Czechia","DR Congo","Haiti","Iran","Iraq","Jordan","New Zealand","South Africa","Uzbekistan"];
+
+    const pots = [pot1, pot2, pot3, pot4];
+
+    pots.forEach(pot=>{
+
+        const potTeams = shuffle(teams.filter(team => pot.includes(team.name)));
+
+        for(let i=0; i<players.length; i++){
+            if(i < potTeams.length){
+                players[i].teams.push(potTeams[i]);
+            }
+        }
+
+        const leftovers = potTeams.slice(players.length);
+        leftovers.forEach(team=>{
+            const randomPlayer = players[Math.floor(Math.random() * players.length)];
+            randomPlayer.teams.push(team);
+        });
+
+    });
+
+    return players;
 
 }
+
+// ----------------------
+// Page Init
+// ----------------------
+
+loadData().then(data => {
+
+    document.getElementById("tournamentMessage").value =
+        data.tournamentMessage || "";
+
+    buildStatusManager(data);
+
+    if(data.drawLocked){
+        const button = document.getElementById("drawButton");
+        button.innerHTML = "🔒 Draw Locked";
+        button.disabled = true;
+    }
+
+    if(data.players && data.players.length > 0){
+        renderDraw(data.players);
+    }
 
 });
 
-function generateTournamentDraw(){
+// ----------------------
+// Generate Draw
+// ----------------------
 
-loadData().then(data=>{
+window.generateTournamentDraw = async function(){
 
-const names =
-document
-.getElementById("participants")
-.value
-.split("\n")
-.map(name=>name.trim())
-.filter(name=>name);
+    const data = await loadData();
 
-if(names.length < 2){
+    const names = document.getElementById("participants")
+        .value.split("\n").map(n=>n.trim()).filter(n=>n);
 
-alert(
-"Please enter at least 2 participants"
-);
+    if(names.length < 2){
+        alert("Please enter at least 2 participants");
+        return;
+    }
 
-return;
+    const players = names.map(name=>({ name, photo:"", teams:[] }));
+    const teams = data.teams.map(team=>({
+        name:team.name, flag:team.flag, group:team.group, status:"🟢 Active"
+    }));
 
-}
+    generateDraw(players, teams);
 
-const players =
-names.map(name=>({
+    tournamentData = data;
+    tournamentData.players = players;
+    tournamentData.drawLocked = true;
 
-name:name,
-photo:"",
-teams:[]
+    renderDraw(players);
 
-}));
+    document.getElementById("drawButton").innerHTML = "🔒 Draw Locked";
+    document.getElementById("drawButton").disabled = true;
 
-const teams =
-data.teams.map(team=>({
-
-name:team.name,
-flag:team.flag,
-group:team.group,
-status:"🟢 Active"
-
-}));
-generateDraw(
-players,
-teams
-);
-
-tournamentData = data;
-
-tournamentData.players =
-players;
-
-tournamentData.drawLocked =
-true;
-
-renderDraw(players);
-
-saveLocalTournamentData();
-
-document.getElementById(
-"drawButton"
-).innerHTML =
-"🔒 Draw Locked";
-
-document.getElementById(
-"drawButton"
-).disabled =
-true;
-
-alert(
-"Official draw generated and locked!"
-);
-
-});
+    alert("Official draw generated and locked!");
 
 }
+
+// ----------------------
+// Render Draw
+// ----------------------
 
 function renderDraw(players){
 
-let html = "";
+    let html = "";
 
-players.forEach(player=>{
+    players.forEach(player=>{
 
-html += `
+        html += `<div class="player-result"><h3>${player.name}</h3>`;
 
-<div class="player-result">
+        player.teams.forEach(team=>{
+            html += `<div>${team.flag} ${team.name} (Group ${team.group})</div>`;
+        });
 
-<h3>${player.name}</h3>
+        html += `</div>`;
 
-`;
+    });
 
-player.teams.forEach(team=>{
-
-html += `
-
-<div>
-
-${team.flag}
-${team.name}
-
-(Group ${team.group})
-
-</div>
-
-`;
-
-});
-
-html += `
-
-</div>
-
-`;
-
-});
-
-document.getElementById(
-"drawOutput"
-).innerHTML = html;
+    document.getElementById("drawOutput").innerHTML = html;
 
 }
 
-function saveMessage(){
+// ----------------------
+// Save Message
+// ----------------------
 
-if(!tournamentData){
+window.saveMessage = async function(){
 
-alert(
-"Generate a draw first"
-);
+    if(!tournamentData){
+        alert("Load data first");
+        return;
+    }
 
-return;
+    tournamentData.tournamentMessage =
+        document.getElementById("tournamentMessage").value;
 
-}
-
-tournamentData.tournamentMessage =
-document.getElementById(
-"tournamentMessage"
-).value;
-
-saveLocalTournamentData();
-
-alert(
-"Message saved"
-);
+    await saveToFirebase();
+    showSaveStatus("✅ Message saved!");
 
 }
+
+// ----------------------
+// Build Status Manager
+// ----------------------
 
 function buildStatusManager(data){
 
-let currentStatuses = {};
+    let html = "";
 
-if(
-tournamentData &&
-tournamentData.players
-){
+    data.teams.forEach(team=>{
 
-tournamentData.players.forEach(player=>{
+        const currentStatus = getTeamStatus(team.name) || "🟢 Active";
 
-player.teams.forEach(team=>{
+        html += `
+        <div class="status-row">
+            <div>${team.flag} ${team.name} (Group ${team.group})</div>
+            <select id="status-${team.name}">
+                ${data.statuses.map(status=>`
+                    <option value="${status}" ${status === currentStatus ? "selected" : ""}>
+                        ${status}
+                    </option>
+                `).join("")}
+            </select>
+        </div>`;
 
-currentStatuses[team.name] =
-team.status;
+    });
 
-});
-
-});
-
-}
-
-let html = "";
-
-data.teams.forEach(team=>{
-
-const selectedStatus =
-currentStatuses[team.name] ||
-"🟢 Active";
-
-html += `
-
-<div class="status-row">
-
-<div>
-
-${team.flag}
-${team.name}
-
-(Group ${team.group})
-
-</div>
-
-<select
-id="status-${team.name}">
-
-${data.statuses.map(status=>`
-
-<option
-value="${status}"
-${status === selectedStatus
-? "selected"
-: ""
-}
->
-
-${status}
-
-</option>
-
-`).join("")}
-
-</select>
-
-</div>
-
-`;
-
-});
-
-document.getElementById(
-"statusManager"
-).innerHTML = html;
+    document.getElementById("statusManager").innerHTML = html;
 
 }
 
-function saveTournament(){
+function getTeamStatus(teamName){
 
-if(!tournamentData){
+    if(!tournamentData || !tournamentData.players) return null;
 
-alert(
-"Generate draw first"
-);
+    for(const player of tournamentData.players){
+        const team = player.teams.find(t => t.name === teamName);
+        if(team) return team.status;
+    }
 
-return;
-
-}
-
-tournamentData.tournamentMessage =
-document.getElementById(
-"tournamentMessage"
-).value;
-
-const statusMap = {};
-
-tournamentData.teams.forEach(team=>{
-
-const select =
-document.getElementById(
-`status-${team.name}`
-);
-
-if(select){
-
-statusMap[team.name] =
-select.value;
+    return null;
 
 }
 
-});
-tournamentData.players.forEach(player=>{
+// ----------------------
+// Save Tournament
+// ----------------------
 
-player.teams.forEach(team=>{
+window.saveTournament = async function(){
 
-if(statusMap[team.name]){
+    if(!tournamentData){
+        alert("Load data first");
+        return;
+    }
 
-team.status =
-statusMap[team.name];
+    tournamentData.tournamentMessage =
+        document.getElementById("tournamentMessage").value;
 
-}
+    const statusMap = {};
 
-});
+    tournamentData.teams.forEach(team=>{
+        const select = document.getElementById(`status-${team.name}`);
+        if(select){ statusMap[team.name] = select.value; }
+    });
 
-});
+    tournamentData.players.forEach(player=>{
+        player.teams.forEach(team=>{
+            if(statusMap[team.name]){
+                team.status = statusMap[team.name];
+            }
+        });
+    });
 
-saveLocalTournamentData();
-
-alert(
-"Tournament saved successfully"
-);
-
-}
-
-function unlockDraw(){
-
-const confirmUnlock =
-confirm(
-"Unlock draw and allow a redraw?"
-);
-
-if(!confirmUnlock){
-
-return;
+    await saveToFirebase();
+    showSaveStatus("✅ Saved! All users will see updates instantly.");
 
 }
 
-tournamentData.drawLocked =
-false;
+// ----------------------
+// Unlock Draw
+// ----------------------
 
-saveLocalTournamentData();
+window.unlockDraw = async function(){
 
-const button =
-document.getElementById(
-"drawButton"
-);
+    if(!confirm("Unlock draw and allow a redraw?")) return;
 
-button.disabled =
-false;
+    tournamentData.drawLocked = false;
 
-button.innerHTML =
-"🎲 Generate Draw";
+    await saveToFirebase();
 
-alert(
-"Draw unlocked successfully"
-);
+    const button = document.getElementById("drawButton");
+    button.disabled = false;
+    button.innerHTML = "🎲 Generate Draw";
+
+    alert("Draw unlocked successfully");
 
 }
 
-function downloadDataFile(){
+// ----------------------
+// Download data.json
+// ----------------------
 
-if(!tournamentData){
+window.downloadDataFile = function(){
 
-alert(
-"Generate draw first"
-);
+    if(!tournamentData){
+        alert("Load data first");
+        return;
+    }
 
-return;
+    const json = JSON.stringify(tournamentData, null, 2);
+    const blob = new Blob([json], {type:"application/json"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "data.json";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
 
 }
 
-const json =
-JSON.stringify(
-tournamentData,
-null,
-2
-);
+// ----------------------
+// Save Status Indicator
+// ----------------------
 
-const blob =
-new Blob(
-[json],
-{
-type:"application/json"
-}
-);
+function showSaveStatus(message){
 
-const url =
-URL.createObjectURL(blob);
-
-const a =
-document.createElement("a");
-
-a.href = url;
-
-a.download =
-"data.json";
-
-document.body.appendChild(a);
-
-a.click();
-
-document.body.removeChild(a);
-
-URL.revokeObjectURL(url);
+    const el = document.getElementById("saveStatus");
+    el.innerText = message;
+    setTimeout(()=>{ el.innerText = ""; }, 3000);
 
 }
 
