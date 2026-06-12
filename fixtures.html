@@ -233,12 +233,17 @@ const fixtures = [
 loadData().then(data => {
 
     const teamOwner = {};
+    const scores = data.scores || {};
 
     data.players.forEach(player => {
         player.teams.forEach(team => {
             teamOwner[team.name] = player.name;
         });
     });
+
+    function matchKey(home, away, time){
+        return `${home}_vs_${away}_${time}`.replace(/\s+/g,"_");
+    }
 
     let html = "";
 
@@ -251,15 +256,37 @@ loadData().then(data => {
             const home = match[0];
             const away = match[1];
             const time = match[2];
+            const key = matchKey(home, away, time);
+            const score = scores[key];
 
             const homeOwner = teamOwner[home] || "-";
             const awayOwner = teamOwner[away] || "-";
+
+            let scoreHTML = "";
+
+            if(score && (score.homeScore !== null || score.awayScore !== null)){
+
+                const resultLabel =
+                    score.result === "home" ? `🏆 ${home} Win` :
+                    score.result === "away" ? `🏆 ${away} Win` :
+                    score.result === "draw" ? "🤝 Draw" : "";
+
+                scoreHTML = `
+                    <p style="font-size:1.4em;font-weight:bold;margin:5px 0;">
+                        ${score.homeScore ?? "-"} - ${score.awayScore ?? "-"}
+                    </p>
+                    ${resultLabel ? `<p style="color:#86efac;">${resultLabel}</p>` : ""}
+                `;
+
+            } else {
+                scoreHTML = `<p style="opacity:0.5;">Not played yet</p>`;
+            }
 
             html += `
             <div class="team-card">
                 <h3>${time} UK Time</h3>
                 <p>⚽ ${home}<br>👤 ${homeOwner}</p>
-                <p>vs</p>
+                ${scoreHTML}
                 <p>⚽ ${away}<br>👤 ${awayOwner}</p>
             </div>`;
 
