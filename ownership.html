@@ -18,118 +18,85 @@
 
 <h1>📋 Team Ownership</h1>
 
-<p>
-See who owns each team and their tournament status
-</p>
+<p>See who owns each team and their tournament status</p>
 
-<div id="ownershipList">
-
-Loading...
-
-</div>
+<div id="ownershipList">Loading...</div>
 
 <br>
 
-<a href="index.html">
-← Home
-</a>
+<a href="index.html">← Home</a>
 
 </div>
 
-<script src="app.js"></script>
+<script type="module">
 
-<script>
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-loadData().then(data=>{
+const firebaseConfig = {
+  apiKey: "AIzaSyBmVb4vdoCJQg5uFC-yGogjKZzIsdhWZRY",
+  authDomain: "world-cup-sweepstake-202-d2993.firebaseapp.com",
+  projectId: "world-cup-sweepstake-202-d2993",
+  storageBucket: "world-cup-sweepstake-202-d2993.firebasestorage.app",
+  messagingSenderId: "417434337725",
+  appId: "1:417434337725:web:7728561dc86974fee152d4",
+  measurementId: "G-1YZKQ5ZT64"
+};
 
-loadLocalTournamentData();
+const firebaseApp = initializeApp(firebaseConfig);
+const db = getFirestore(firebaseApp);
 
-if(tournamentData){
+async function loadData(){
 
-data = tournamentData;
+    try {
+
+        const docRef = doc(db, "tournament", "data");
+        const docSnap = await getDoc(docRef);
+
+        if(docSnap.exists()) return docSnap.data();
+
+    } catch(e) {
+        console.log("Firebase unavailable, falling back to data.json");
+    }
+
+    const response = await fetch("data.json");
+    return await response.json();
 
 }
 
-let teams = [];
+loadData().then(data => {
 
-data.players.forEach(player=>{
+    let teams = [];
 
-player.teams.forEach(team=>{
+    data.players.forEach(player=>{
+        player.teams.forEach(team=>{
+            teams.push({
+                team: team.name,
+                flag: team.flag,
+                group: team.group || "-",
+                status: team.status || "🟢 Active",
+                owner: player.name
+            });
+        });
+    });
 
-teams.push({
+    teams.sort((a,b) => a.team.localeCompare(b.team));
 
-team:team.name,
-flag:team.flag,
-group:team.group || "-",
-status:team.status || "🟢 Active",
-owner:player.name
+    let html = "";
 
-});
+    teams.forEach(item=>{
+        html += `
+        <div class="team-card">
+            <div style="flex:1;text-align:left;">
+                <h3>${item.flag} ${item.team}</h3>
+                <p>Group: <strong>${item.group}</strong></p>
+                <p>Status: <strong>${item.status}</strong></p>
+            </div>
+            <div><strong>${item.owner}</strong></div>
+        </div>`;
+    });
 
-});
-
-});
-
-teams.sort((a,b)=>
-a.team.localeCompare(b.team)
-);
-
-let html = "";
-
-teams.forEach(item=>{
-
-html += `
-
-<div class="team-card">
-
-<div style="flex:1;text-align:left;">
-
-<h3>
-
-${item.flag}
-${item.team}
-
-</h3>
-
-<p>
-
-Group:
-<strong>
-${item.group}
-</strong>
-
-</p>
-
-<p>
-
-Status:
-<strong>
-${item.status}
-</strong>
-
-</p>
-
-</div>
-
-<div>
-
-<strong>
-
-${item.owner}
-
-</strong>
-
-</div>
-
-</div>
-
-`;
-
-});
-
-document.getElementById(
-"ownershipList"
-).innerHTML = html;
+    document.getElementById("ownershipList").innerHTML = html;
 
 });
 
