@@ -100,8 +100,12 @@
           "group": "I",
           "status": "🟢 Active"
         }
-      ]
-    },
+      {
+  "name": "United States",
+  "flag": "🇺🇸",
+  "group": "D",
+  "status": "🟢 Active"
+}
     {
       "name": "Harvey",
       "photo": "",
