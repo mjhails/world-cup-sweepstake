@@ -46,57 +46,94 @@ data.players.forEach(p => {
 const fixtures = [
 
 {
-date: "Thursday 11 June",
+date: "Thursday 11 June 2026",
 matches: [
-["England","Ghana","16:00"],
-["Brazil","Morocco","19:00"]
+["Mexico","South Africa","20:00"],
+["South Korea","Czechia","03:00"]
 ]
 },
 
 {
-date: "Friday 12 June",
+date: "Friday 12 June 2026",
 matches: [
-["USA","Australia","20:00"],
-["France","Senegal","22:00"]
+["Canada","Bosnia and Herzegovina","20:00"],
+["United States","Paraguay","02:00"]
+]
+},
+
+{
+date: "Saturday 13 June 2026",
+matches: [
+["Qatar","Switzerland","20:00"],
+["Brazil","Morocco","23:00"]
+]
+},
+
+{
+date: "Sunday 14 June 2026",
+matches: [
+["Haiti","Scotland","02:00"],
+["Australia","Türkiye","05:00"],
+["Germany","Curaçao","18:00"],
+["Netherlands","Japan","21:00"]
+]
+},
+
+{
+date: "Monday 15 June 2026",
+matches: [
+["Ivory Coast","Ecuador","00:00"],
+["Sweden","Tunisia","03:00"],
+["Spain","Cape Verde","18:00"],
+["Belgium","Egypt","21:00"]
 ]
 }
+];,
+{
+date: "Tuesday 16 June 2026",
+matches: [
+["Iran","New Zealand","00:00"],
+["France","Senegal","03:00"],
+["Iraq","Norway","18:00"],
+["Argentina","Algeria","21:00"]
+]
+},
 
-];
+{
+date: "Wednesday 17 June 2026",
+matches: [
+["Austria","Jordan","00:00"],
+["Portugal","DR Congo","03:00"],
+["England","Croatia","18:00"],
+["Ghana","Panama","21:00"]
+]
+},
 
-let html = "";
+{
+date: "Thursday 18 June 2026",
+matches: [
+["South Africa","South Korea","17:00"],
+["Czechia","Mexico","20:00"],
+["Switzerland","Bosnia and Herzegovina","23:00"]
+]
+},
 
-fixtures.forEach(day => {
+{
+date: "Friday 19 June 2026",
+matches: [
+["Paraguay","Canada","02:00"],
+["Morocco","Haiti","17:00"],
+["Scotland","Brazil","20:00"],
+["Türkiye","United States","23:00"]
+]
+},
 
-html += `<h2>📅 ${day.date}</h2>`;
-
-day.matches.forEach(m => {
-
-const homeOwner = teamOwner[m[0]] || "";
-const awayOwner = teamOwner[m[1]] || "";
-
-html += `
-<div class="team-card">
-
-<h3>${m[2]} UK Time</h3>
-
-<p>
-⚽ ${m[0]} (${homeOwner})
-vs
-${m[1]} (${awayOwner})
-</p>
-
-</div>
-`;
-
-});
-
-});
-
-document.getElementById("fixtures").innerHTML = html;
-
-});
-
-</script>
-
-</body>
-</html>
+{
+date: "Saturday 20 June 2026",
+matches: [
+["Curaçao","Australia","02:00"],
+["Japan","Ivory Coast","17:00"],
+["Ecuador","Germany","20:00"],
+["Tunisia","Netherlands","23:00"]
+]
+}
