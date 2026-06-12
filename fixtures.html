@@ -6,6 +6,97 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Fixtures</title>
 <link rel="stylesheet" href="style.css">
+<style>
+
+.fixture-card {
+    background: #1e293b;
+    border-radius: 12px;
+    padding: 12px 16px;
+    margin-bottom: 10px;
+}
+
+.fixture-time {
+    font-size: 0.8em;
+    color: #94a3b8;
+    margin-bottom: 8px;
+    text-align: center;
+}
+
+.fixture-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    width: 100%;
+}
+
+.fixture-team {
+    flex: 1;
+    min-width: 0;
+}
+
+.fixture-team.home {
+    text-align: right;
+}
+
+.fixture-team.away {
+    text-align: left;
+}
+
+.fixture-team-name {
+    font-weight: bold;
+    font-size: 0.95em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.fixture-team-owner {
+    font-size: 0.75em;
+    color: #94a3b8;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.fixture-score {
+    flex: 0 0 auto;
+    text-align: center;
+    min-width: 70px;
+}
+
+.fixture-score-number {
+    font-size: 1.5em;
+    font-weight: bold;
+    white-space: nowrap;
+    line-height: 1.2;
+}
+
+.fixture-score-result {
+    font-size: 0.7em;
+    color: #86efac;
+    white-space: nowrap;
+}
+
+.fixture-score-pending {
+    font-size: 0.85em;
+    color: #475569;
+    white-space: nowrap;
+}
+
+@media (max-width: 480px) {
+    .fixture-team-name {
+        font-size: 0.82em;
+    }
+    .fixture-score-number {
+        font-size: 1.2em;
+    }
+    .fixture-score {
+        min-width: 55px;
+    }
+}
+
+</style>
 </head>
 
 <body>
@@ -41,194 +132,43 @@ const firebaseApp = initializeApp(firebaseConfig);
 const db = getFirestore(firebaseApp);
 
 async function loadData() {
-
     try {
-
         const docRef = doc(db, "tournament", "data");
         const docSnap = await getDoc(docRef);
-
         if (docSnap.exists()) return docSnap.data();
-
     } catch(e) {
         console.log("Firebase unavailable, falling back to data.json");
     }
-
     const response = await fetch("data.json");
     return await response.json();
-
 }
 
 const fixtures = [
-    {
-        date: "Thursday 11 June 2026",
-        matches: [
-            ["Mexico","South Africa","20:00"],
-            ["South Korea","Czechia","23:00"]
-        ]
-    },
-    {
-        date: "Friday 12 June 2026",
-        matches: [
-            ["Canada","Bosnia and Herzegovina","20:00"],
-            ["United States","Paraguay","23:00"]
-        ]
-    },
-    {
-        date: "Saturday 13 June 2026",
-        matches: [
-            ["Qatar","Switzerland","20:00"],
-            ["Brazil","Morocco","23:00"]
-        ]
-    },
-    {
-        date: "Sunday 14 June 2026",
-        matches: [
-            ["Haiti","Scotland","02:00"],
-            ["Australia","Türkiye","05:00"],
-            ["Germany","Curaçao","18:00"],
-            ["Netherlands","Japan","21:00"]
-        ]
-    },
-    {
-        date: "Monday 15 June 2026",
-        matches: [
-            ["Ivory Coast","Ecuador","00:00"],
-            ["Sweden","Tunisia","03:00"],
-            ["Spain","Cape Verde","18:00"],
-            ["Belgium","Egypt","21:00"]
-        ]
-    },
-    {
-        date: "Tuesday 16 June 2026",
-        matches: [
-            ["Iran","New Zealand","00:00"],
-            ["France","Senegal","03:00"],
-            ["Iraq","Norway","18:00"],
-            ["Argentina","Algeria","21:00"]
-        ]
-    },
-    {
-        date: "Wednesday 17 June 2026",
-        matches: [
-            ["Austria","Jordan","00:00"],
-            ["Portugal","DR Congo","03:00"],
-            ["England","Croatia","18:00"],
-            ["Ghana","Panama","21:00"]
-        ]
-    },
-    {
-        date: "Thursday 18 June 2026",
-        matches: [
-            ["South Africa","South Korea","17:00"],
-            ["Czechia","Mexico","20:00"],
-            ["Switzerland","Bosnia and Herzegovina","23:00"]
-        ]
-    },
-    {
-        date: "Friday 19 June 2026",
-        matches: [
-            ["Paraguay","Canada","02:00"],
-            ["Morocco","Haiti","17:00"],
-            ["Scotland","Brazil","20:00"],
-            ["Türkiye","United States","23:00"]
-        ]
-    },
-    {
-        date: "Saturday 20 June 2026",
-        matches: [
-            ["Curaçao","Australia","02:00"],
-            ["Japan","Ivory Coast","17:00"],
-            ["Ecuador","Germany","20:00"],
-            ["Tunisia","Netherlands","23:00"]
-        ]
-    },
-    {
-        date: "Sunday 21 June 2026",
-        matches: [
-            ["Cape Verde","Saudi Arabia","17:00"],
-            ["Uruguay","Spain","20:00"],
-            ["Egypt","Iran","23:00"]
-        ]
-    },
-    {
-        date: "Monday 22 June 2026",
-        matches: [
-            ["New Zealand","Belgium","02:00"],
-            ["Senegal","Iraq","17:00"],
-            ["Norway","France","20:00"],
-            ["Algeria","Austria","23:00"]
-        ]
-    },
-    {
-        date: "Tuesday 23 June 2026",
-        matches: [
-            ["Jordan","Argentina","02:00"],
-            ["DR Congo","Uzbekistan","17:00"],
-            ["Colombia","Portugal","20:00"],
-            ["Croatia","Ghana","23:00"]
-        ]
-    },
-    {
-        date: "Wednesday 24 June 2026",
-        matches: [
-            ["Panama","England","02:00"],
-            ["Mexico","South Korea","17:00"],
-            ["South Africa","Czechia","20:00"],
-            ["Bosnia and Herzegovina","Qatar","23:00"]
-        ]
-    },
-    {
-        date: "Thursday 25 June 2026",
-        matches: [
-            ["Switzerland","Canada","02:00"],
-            ["Brazil","Haiti","17:00"],
-            ["Morocco","Scotland","20:00"],
-            ["United States","Australia","23:00"]
-        ]
-    },
-    {
-        date: "Friday 26 June 2026",
-        matches: [
-            ["Türkiye","Paraguay","02:00"],
-            ["Germany","Ivory Coast","17:00"],
-            ["Curaçao","Ecuador","20:00"],
-            ["Netherlands","Sweden","23:00"]
-        ]
-    },
-    {
-        date: "Saturday 27 June 2026",
-        matches: [
-            ["Japan","Tunisia","02:00"],
-            ["Spain","Saudi Arabia","17:00"],
-            ["Cape Verde","Uruguay","20:00"],
-            ["Belgium","Iran","23:00"]
-        ]
-    },
-    {
-        date: "Sunday 28 June 2026",
-        matches: [
-            ["Egypt","New Zealand","02:00"],
-            ["France","Iraq","17:00"],
-            ["Senegal","Norway","20:00"],
-            ["Argentina","Austria","23:00"]
-        ]
-    },
-    {
-        date: "Monday 29 June 2026",
-        matches: [
-            ["Algeria","Jordan","02:00"],
-            ["Portugal","Uzbekistan","17:00"],
-            ["DR Congo","Colombia","20:00"],
-            ["England","Ghana","23:00"]
-        ]
-    },
-    {
-        date: "Tuesday 30 June 2026",
-        matches: [
-            ["Croatia","Panama","02:00"]
-        ]
-    }
+    {date:"Thursday 11 June 2026",matches:[["Mexico","South Africa","20:00"],["South Korea","Czechia","23:00"]]},
+    {date:"Friday 12 June 2026",matches:[["Canada","Bosnia and Herzegovina","20:00"],["United States","Paraguay","23:00"]]},
+    {date:"Saturday 13 June 2026",matches:[["Qatar","Switzerland","20:00"],["Brazil","Morocco","23:00"]]},
+    {date:"Sunday 14 June 2026",matches:[["Haiti","Scotland","02:00"],["Australia","Türkiye","05:00"],["Germany","Curaçao","18:00"],["Netherlands","Japan","21:00"]]},
+    {date:"Monday 15 June 2026",matches:[["Ivory Coast","Ecuador","00:00"],["Sweden","Tunisia","03:00"],["Spain","Cape Verde","18:00"],["Belgium","Egypt","21:00"]]},
+    {date:"Tuesday 16 June 2026",matches:[["Iran","New Zealand","00:00"],["France","Senegal","03:00"],["Iraq","Norway","18:00"],["Argentina","Algeria","21:00"]]},
+    {date:"Wednesday 17 June 2026",matches:[["Austria","Jordan","00:00"],["Portugal","DR Congo","03:00"],["England","Croatia","18:00"],["Ghana","Panama","21:00"]]},
+    {date:"Thursday 18 June 2026",matches:[["South Africa","South Korea","17:00"],["Czechia","Mexico","20:00"],["Switzerland","Bosnia and Herzegovina","23:00"]]},
+    {date:"Friday 19 June 2026",matches:[["Paraguay","Canada","02:00"],["Morocco","Haiti","17:00"],["Scotland","Brazil","20:00"],["Türkiye","United States","23:00"]]},
+    {date:"Saturday 20 June 2026",matches:[["Curaçao","Australia","02:00"],["Japan","Ivory Coast","17:00"],["Ecuador","Germany","20:00"],["Tunisia","Netherlands","23:00"]]},
+    {date:"Sunday 21 June 2026",matches:[["Cape Verde","Saudi Arabia","17:00"],["Uruguay","Spain","20:00"],["Egypt","Iran","23:00"]]},
+    {date:"Monday 22 June 2026",matches:[["New Zealand","Belgium","02:00"],["Senegal","Iraq","17:00"],["Norway","France","20:00"],["Algeria","Austria","23:00"]]},
+    {date:"Tuesday 23 June 2026",matches:[["Jordan","Argentina","02:00"],["DR Congo","Uzbekistan","17:00"],["Colombia","Portugal","20:00"],["Croatia","Ghana","23:00"]]},
+    {date:"Wednesday 24 June 2026",matches:[["Panama","England","02:00"],["Mexico","South Korea","17:00"],["South Africa","Czechia","20:00"],["Bosnia and Herzegovina","Qatar","23:00"]]},
+    {date:"Thursday 25 June 2026",matches:[["Switzerland","Canada","02:00"],["Brazil","Haiti","17:00"],["Morocco","Scotland","20:00"],["United States","Australia","23:00"]]},
+    {date:"Friday 26 June 2026",matches:[["Türkiye","Paraguay","02:00"],["Germany","Ivory Coast","17:00"],["Curaçao","Ecuador","20:00"],["Netherlands","Sweden","23:00"]]},
+    {date:"Saturday 27 June 2026",matches:[["Japan","Tunisia","02:00"],["Spain","Saudi Arabia","17:00"],["Cape Verde","Uruguay","20:00"],["Belgium","Iran","23:00"]]},
+    {date:"Sunday 28 June 2026",matches:[["Egypt","New Zealand","02:00"],["France","Iraq","17:00"],["Senegal","Norway","20:00"],["Argentina","Austria","23:00"]]},
+    {date:"Monday 29 June 2026",matches:[["Algeria","Jordan","02:00"],["Portugal","Uzbekistan","17:00"],["DR Congo","Colombia","20:00"],["England","Ghana","23:00"]]},
+    {date:"Tuesday 30 June 2026",matches:[["Croatia","Panama","02:00"]]}
 ];
+
+function matchKey(home, away, time){
+    return `${home}_vs_${away}_${time}`.replace(/\s+/g,"_");
+}
 
 loadData().then(data => {
 
@@ -240,10 +180,6 @@ loadData().then(data => {
             teamOwner[team.name] = player.name;
         });
     });
-
-    function matchKey(home, away, time){
-        return `${home}_vs_${away}_${time}`.replace(/\s+/g,"_");
-    }
 
     let html = "";
 
@@ -265,29 +201,37 @@ loadData().then(data => {
             let scoreHTML = "";
 
             if(score && (score.homeScore !== null || score.awayScore !== null)){
-
                 const resultLabel =
                     score.result === "home" ? `🏆 ${home} Win` :
                     score.result === "away" ? `🏆 ${away} Win` :
                     score.result === "draw" ? "🤝 Draw" : "";
 
                 scoreHTML = `
-                    <p style="font-size:1.4em;font-weight:bold;margin:5px 0;">
-                        ${score.homeScore ?? "-"} - ${score.awayScore ?? "-"}
-                    </p>
-                    ${resultLabel ? `<p style="color:#86efac;">${resultLabel}</p>` : ""}
-                `;
-
+                    <div class="fixture-score">
+                        <div class="fixture-score-number">${score.homeScore ?? "-"} - ${score.awayScore ?? "-"}</div>
+                        ${resultLabel ? `<div class="fixture-score-result">${resultLabel}</div>` : ""}
+                    </div>`;
             } else {
-                scoreHTML = `<p style="opacity:0.5;">Not played yet</p>`;
+                scoreHTML = `
+                    <div class="fixture-score">
+                        <div class="fixture-score-pending">vs</div>
+                    </div>`;
             }
 
             html += `
-            <div class="team-card">
-                <h3>${time} UK Time</h3>
-                <p>⚽ ${home}<br>👤 ${homeOwner}</p>
-                ${scoreHTML}
-                <p>⚽ ${away}<br>👤 ${awayOwner}</p>
+            <div class="fixture-card">
+                <div class="fixture-time">⏰ ${time} UK Time</div>
+                <div class="fixture-row">
+                    <div class="fixture-team home">
+                        <div class="fixture-team-name">⚽ ${home}</div>
+                        <div class="fixture-team-owner">👤 ${homeOwner}</div>
+                    </div>
+                    ${scoreHTML}
+                    <div class="fixture-team away">
+                        <div class="fixture-team-name">⚽ ${away}</div>
+                        <div class="fixture-team-owner">👤 ${awayOwner}</div>
+                    </div>
+                </div>
             </div>`;
 
         });
