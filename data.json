@@ -16,583 +16,164 @@
       "name": "Mike",
       "photo": "",
       "teams": [
-        {
-          "name": "Morocco",
-          "flag": "🇲🇦",
-          "group": "C",
-          "status": "🟢 Active"
-        },
-        {
-          "name": "Japan",
-          "flag": "🇯🇵",
-          "group": "F",
-          "status": "🟢 Active"
-        },
-        {
-          "name": "Scotland",
-          "flag": "🏴",
-          "group": "C",
-          "status": "🟢 Active"
-        },
-        {
-          "name": "Uzbekistan",
-          "flag": "🇺🇿",
-          "group": "K",
-          "status": "🟢 Active"
-        }
+        { "name": "Morocco",    "flag": "🇲🇦", "group": "C", "status": "🟢 Active" },
+        { "name": "Japan",      "flag": "🇯🇵", "group": "F", "status": "🟢 Active" },
+        { "name": "Scotland",   "flag": "🏴", "group": "C", "status": "🟢 Active" },
+        { "name": "Uzbekistan", "flag": "🇺🇿", "group": "K", "status": "🟢 Active" }
       ]
     },
     {
       "name": "Steph",
       "photo": "",
       "teams": [
-        {
-          "name": "Spain",
-          "flag": "🇪🇸",
-          "group": "H",
-          "status": "🟢 Active"
-        },
-        {
-          "name": "Switzerland",
-          "flag": "🇨🇭",
-          "group": "B",
-          "status": "🟢 Active"
-        },
-        {
-          "name": "Panama",
-          "flag": "🇵🇦",
-          "group": "L",
-          "status": "🟢 Active"
-        },
-        {
-          "name": "Czechia",
-          "flag": "🇨🇿",
-          "group": "A",
-          "status": "🟢 Active"
-        }
+        { "name": "Spain",       "flag": "🇪🇸", "group": "H", "status": "🟢 Active" },
+        { "name": "Switzerland", "flag": "🇨🇭", "group": "B", "status": "🟢 Active" },
+        { "name": "Panama",      "flag": "🇵🇦", "group": "L", "status": "🟢 Active" },
+        { "name": "Czechia",     "flag": "🇨🇿", "group": "A", "status": "🟢 Active" }
       ]
     },
     {
       "name": "Amelia",
       "photo": "",
       "teams": [
-        {
-          "name": "Belgium",
-          "flag": "🇧🇪",
-          "group": "G",
-          "status": "🟢 Active"
-        },
-        {
-          "name": "Ecuador",
-          "flag": "🇪🇨",
-          "group": "E",
-          "status": "🟢 Active"
-        },
-        {
-          "name": "Algeria",
-          "flag": "🇩🇿",
-          "group": "J",
-          "status": "🟢 Active"
-        },
-        {
-          "name": "Iraq",
-          "flag": "🇮🇶",
-          "group": "I",
-          "status": "🟢 Active"
-        },
-      {
-  "name": "United States",
-  "flag": "🇺🇸",
-  "group": "D",
-  "status": "🟢 Active"
-}
+        { "name": "Belgium",       "flag": "🇧🇪", "group": "G", "status": "🟢 Active" },
+        { "name": "Ecuador",       "flag": "🇪🇨", "group": "E", "status": "🟢 Active" },
+        { "name": "Algeria",       "flag": "🇩🇿", "group": "J", "status": "🟢 Active" },
+        { "name": "Iraq",          "flag": "🇮🇶", "group": "I", "status": "🟢 Active" },
+        { "name": "United States", "flag": "🇺🇸", "group": "D", "status": "🟢 Active" }
+      ]
+    },
     {
       "name": "Harvey",
       "photo": "",
       "teams": [
-        {
-          "name": "Germany",
-          "flag": "🇩🇪",
-          "group": "E",
-          "status": "🟢 Active"
-        },
-        {
-          "name": "Norway",
-          "flag": "🇳🇴",
-          "group": "I",
-          "status": "🟢 Active"
-        },
-        {
-          "name": "Australia",
-          "flag": "🇦🇺",
-          "group": "D",
-          "status": "🟢 Active"
-        },
-        {
-          "name": "Cape Verde",
-          "flag": "🇨🇻",
-          "group": "H",
-          "status": "🟢 Active"
-        }
+        { "name": "Germany",    "flag": "🇩🇪", "group": "E", "status": "🟢 Active" },
+        { "name": "Norway",     "flag": "🇳🇴", "group": "I", "status": "🟢 Active" },
+        { "name": "Australia",  "flag": "🇦🇺", "group": "D", "status": "🟢 Active" },
+        { "name": "Cape Verde", "flag": "🇨🇻", "group": "H", "status": "🟢 Active" }
       ]
     },
     {
       "name": "James",
       "photo": "",
       "teams": [
-        {
-          "name": "Netherlands",
-          "flag": "🇳🇱",
-          "group": "F",
-          "status": "🟢 Active"
-        },
-        {
-          "name": "Senegal",
-          "flag": "🇸🇳",
-          "group": "I",
-          "status": "🟢 Active"
-        },
-        {
-          "name": "Egypt",
-          "flag": "🇪🇬",
-          "group": "G",
-          "status": "🟢 Active"
-        },
-        {
-          "name": "Haiti",
-          "flag": "🇭🇹",
-          "group": "C",
-          "status": "🟢 Active"
-        }
+        { "name": "Netherlands", "flag": "🇳🇱", "group": "F", "status": "🟢 Active" },
+        { "name": "Senegal",     "flag": "🇸🇳", "group": "I", "status": "🟢 Active" },
+        { "name": "Egypt",       "flag": "🇪🇬", "group": "G", "status": "🟢 Active" },
+        { "name": "Haiti",       "flag": "🇭🇹", "group": "C", "status": "🟢 Active" }
       ]
     },
     {
       "name": "Pippa",
       "photo": "",
       "teams": [
-        {
-          "name": "Portugal",
-          "flag": "🇵🇹",
-          "group": "K",
-          "status": "🟢 Active"
-        },
-        {
-          "name": "Sweden",
-          "flag": "🇸🇪",
-          "group": "F",
-          "status": "🟢 Active"
-        },
-        {
-          "name": "Ghana",
-          "flag": "🇬🇭",
-          "group": "L",
-          "status": "🟢 Active"
-        },
-        {
-          "name": "Iran",
-          "flag": "🇮🇷",
-          "group": "G",
-          "status": "🟢 Active"
-        }
+        { "name": "Portugal",               "flag": "🇵🇹", "group": "K", "status": "🟢 Active" },
+        { "name": "Sweden",                 "flag": "🇸🇪", "group": "F", "status": "🟢 Active" },
+        { "name": "Ghana",                  "flag": "🇬🇭", "group": "L", "status": "🟢 Active" },
+        { "name": "Iran",                   "flag": "🇮🇷", "group": "G", "status": "🟢 Active" },
+        { "name": "Bosnia and Herzegovina", "flag": "🇧🇦", "group": "B", "status": "🟢 Active" }
       ]
     },
     {
       "name": "Orson",
       "photo": "",
       "teams": [
-        {
-          "name": "Argentina",
-          "flag": "🇦🇷",
-          "group": "J",
-          "status": "🟢 Active"
-        },
-        {
-          "name": "France",
-          "flag": "🇫🇷",
-          "group": "I",
-          "status": "🟢 Active"
-        },
-        {
-          "name": "Paraguay",
-          "flag": "🇵🇾",
-          "group": "D",
-          "status": "🟢 Active"
-        },
-        {
-          "name": "Austria",
-          "flag": "🇦🇹",
-          "group": "J",
-          "status": "🟢 Active"
-        },
-        {
-          "name": "DR Congo",
-          "flag": "🇨🇩",
-          "group": "K",
-          "status": "🟢 Active"
-        }
+        { "name": "Argentina", "flag": "🇦🇷", "group": "J", "status": "🟢 Active" },
+        { "name": "France",    "flag": "🇫🇷", "group": "I", "status": "🟢 Active" },
+        { "name": "Paraguay",  "flag": "🇵🇾", "group": "D", "status": "🟢 Active" },
+        { "name": "Austria",   "flag": "🇦🇹", "group": "J", "status": "🟢 Active" },
+        { "name": "DR Congo",  "flag": "🇨🇩", "group": "K", "status": "🟢 Active" }
       ]
     },
     {
       "name": "Tony",
       "photo": "",
       "teams": [
-        {
-          "name": "England",
-          "flag": "🏴",
-          "group": "L",
-          "status": "🟢 Active"
-        },
-        {
-          "name": "South Korea",
-          "flag": "🇰🇷",
-          "group": "A",
-          "status": "🟢 Active"
-        },
-        {
-          "name": "Saudi Arabia",
-          "flag": "🇸🇦",
-          "group": "H",
-          "status": "🟢 Active"
-        },
-        {
-          "name": "South Africa",
-          "flag": "🇿🇦",
-          "group": "A",
-          "status": "🟢 Active"
-        }
+        { "name": "England",      "flag": "🏴", "group": "L", "status": "🟢 Active" },
+        { "name": "South Korea",  "flag": "🇰🇷", "group": "A", "status": "🟢 Active" },
+        { "name": "Saudi Arabia", "flag": "🇸🇦", "group": "H", "status": "🟢 Active" },
+        { "name": "South Africa", "flag": "🇿🇦", "group": "A", "status": "🟢 Active" }
       ]
     },
     {
       "name": "Fran",
       "photo": "",
       "teams": [
-        {
-          "name": "Croatia",
-          "flag": "🇭🇷",
-          "group": "L",
-          "status": "🟢 Active"
-        },
-        {
-          "name": "Mexico",
-          "flag": "🇲🇽",
-          "group": "A",
-          "status": "🟢 Active"
-        },
-        {
-          "name": "Qatar",
-          "flag": "🇶🇦",
-          "group": "B",
-          "status": "🟢 Active"
-        },
-        {
-          "name": "Curaçao",
-          "flag": "🇨🇼",
-          "group": "E",
-          "status": "🟢 Active"
-        }
+        { "name": "Croatia",  "flag": "🇭🇷", "group": "L", "status": "🟢 Active" },
+        { "name": "Mexico",   "flag": "🇲🇽", "group": "A", "status": "🟢 Active" },
+        { "name": "Qatar",    "flag": "🇶🇦", "group": "B", "status": "🟢 Active" },
+        { "name": "Curaçao",  "flag": "🇨🇼", "group": "E", "status": "🟢 Active" }
       ]
     },
     {
       "name": "Karen",
       "photo": "",
       "teams": [
-        {
-          "name": "Brazil",
-          "flag": "🇧🇷",
-          "group": "C",
-          "status": "🟢 Active"
-        },
-        {
-          "name": "Türkiye",
-          "flag": "🇹🇷",
-          "group": "D",
-          "status": "🟢 Active"
-        },
-        {
-          "name": "Canada",
-          "flag": "🇨🇦",
-          "group": "B",
-          "status": "🟢 Active"
-        },
-        {
-          "name": "Jordan",
-          "flag": "🇯🇴",
-          "group": "J",
-          "status": "🟢 Active"
-        }
+        { "name": "Brazil",   "flag": "🇧🇷", "group": "C", "status": "🟢 Active" },
+        { "name": "Türkiye",  "flag": "🇹🇷", "group": "D", "status": "🟢 Active" },
+        { "name": "Canada",   "flag": "🇨🇦", "group": "B", "status": "🟢 Active" },
+        { "name": "Jordan",   "flag": "🇯🇴", "group": "J", "status": "🟢 Active" }
       ]
     },
     {
       "name": "Roger",
       "photo": "",
       "teams": [
-        {
-          "name": "Uruguay",
-          "flag": "🇺🇾",
-          "group": "H",
-          "status": "🟢 Active"
-        },
-        {
-          "name": "Colombia",
-          "flag": "🇨🇴",
-          "group": "K",
-          "status": "🟢 Active"
-        },
-        {
-          "name": "Tunisia",
-          "flag": "🇹🇳",
-          "group": "F",
-          "status": "🟢 Active"
-        },
-        {
-          "name": "New Zealand",
-          "flag": "🇳🇿",
-          "group": "G",
-          "status": "🟢 Active"
-        }
+        { "name": "Uruguay",     "flag": "🇺🇾", "group": "H", "status": "🟢 Active" },
+        { "name": "Colombia",    "flag": "🇨🇴", "group": "K", "status": "🟢 Active" },
+        { "name": "Tunisia",     "flag": "🇹🇳", "group": "F", "status": "🟢 Active" },
+        { "name": "New Zealand", "flag": "🇳🇿", "group": "G", "status": "🟢 Active" }
       ]
     }
   ],
   "teams": [
-    {
-      "name": "Mexico",
-      "flag": "🇲🇽",
-      "group": "A"
-    },
-    {
-      "name": "South Africa",
-      "flag": "🇿🇦",
-      "group": "A"
-    },
-    {
-      "name": "South Korea",
-      "flag": "🇰🇷",
-      "group": "A"
-    },
-    {
-      "name": "Czechia",
-      "flag": "🇨🇿",
-      "group": "A"
-    },
-    {
-      "name": "Canada",
-      "flag": "🇨🇦",
-      "group": "B"
-    },
-    {
-      "name": "Switzerland",
-      "flag": "🇨🇭",
-      "group": "B"
-    },
-    {
-      "name": "Qatar",
-      "flag": "🇶🇦",
-      "group": "B"
-    },
-    {
-      "name": "Bosnia and Herzegovina",
-      "flag": "🇧🇦",
-      "group": "B"
-    },
-    {
-      "name": "Brazil",
-      "flag": "🇧🇷",
-      "group": "C"
-    },
-    {
-      "name": "Morocco",
-      "flag": "🇲🇦",
-      "group": "C"
-    },
-    {
-      "name": "Haiti",
-      "flag": "🇭🇹",
-      "group": "C"
-    },
-    {
-      "name": "Scotland",
-      "flag": "🏴",
-      "group": "C"
-    },
-    {
-      "name": "United States",
-      "flag": "🇺🇸",
-      "group": "D"
-    },
-    {
-      "name": "Paraguay",
-      "flag": "🇵🇾",
-      "group": "D"
-    },
-    {
-      "name": "Australia",
-      "flag": "🇦🇺",
-      "group": "D"
-    },
-    {
-      "name": "Türkiye",
-      "flag": "🇹🇷",
-      "group": "D"
-    },
-    {
-      "name": "Germany",
-      "flag": "🇩🇪",
-      "group": "E"
-    },
-    {
-      "name": "Curaçao",
-      "flag": "🇨🇼",
-      "group": "E"
-    },
-    {
-      "name": "Ivory Coast",
-      "flag": "🇨🇮",
-      "group": "E"
-    },
-    {
-      "name": "Ecuador",
-      "flag": "🇪🇨",
-      "group": "E"
-    },
-    {
-      "name": "Netherlands",
-      "flag": "🇳🇱",
-      "group": "F"
-    },
-    {
-      "name": "Japan",
-      "flag": "🇯🇵",
-      "group": "F"
-    },
-    {
-      "name": "Tunisia",
-      "flag": "🇹🇳",
-      "group": "F"
-    },
-    {
-      "name": "Sweden",
-      "flag": "🇸🇪",
-      "group": "F"
-    },
-    {
-      "name": "Belgium",
-      "flag": "🇧🇪",
-      "group": "G"
-    },
-    {
-      "name": "Egypt",
-      "flag": "🇪🇬",
-      "group": "G"
-    },
-    {
-      "name": "Iran",
-      "flag": "🇮🇷",
-      "group": "G"
-    },
-    {
-      "name": "New Zealand",
-      "flag": "🇳🇿",
-      "group": "G"
-    },
-    {
-      "name": "Spain",
-      "flag": "🇪🇸",
-      "group": "H"
-    },
-    {
-      "name": "Cape Verde",
-      "flag": "🇨🇻",
-      "group": "H"
-    },
-    {
-      "name": "Saudi Arabia",
-      "flag": "🇸🇦",
-      "group": "H"
-    },
-    {
-      "name": "Uruguay",
-      "flag": "🇺🇾",
-      "group": "H"
-    },
-    {
-      "name": "France",
-      "flag": "🇫🇷",
-      "group": "I"
-    },
-    {
-      "name": "Senegal",
-      "flag": "🇸🇳",
-      "group": "I"
-    },
-    {
-      "name": "Iraq",
-      "flag": "🇮🇶",
-      "group": "I"
-    },
-    {
-      "name": "Norway",
-      "flag": "🇳🇴",
-      "group": "I"
-    },
-    {
-      "name": "Argentina",
-      "flag": "🇦🇷",
-      "group": "J"
-    },
-    {
-      "name": "Algeria",
-      "flag": "🇩🇿",
-      "group": "J"
-    },
-    {
-      "name": "Austria",
-      "flag": "🇦🇹",
-      "group": "J"
-    },
-    {
-      "name": "Jordan",
-      "flag": "🇯🇴",
-      "group": "J"
-    },
-    {
-      "name": "Portugal",
-      "flag": "🇵🇹",
-      "group": "K"
-    },
-    {
-      "name": "DR Congo",
-      "flag": "🇨🇩",
-      "group": "K"
-    },
-    {
-      "name": "Uzbekistan",
-      "flag": "🇺🇿",
-      "group": "K"
-    },
-    {
-      "name": "Colombia",
-      "flag": "🇨🇴",
-      "group": "K"
-    },
-    {
-      "name": "England",
-      "flag": "🏴",
-      "group": "L"
-    },
-    {
-      "name": "Croatia",
-      "flag": "🇭🇷",
-      "group": "L"
-    },
-    {
-      "name": "Ghana",
-      "flag": "🇬🇭",
-      "group": "L"
-    },
-    {
-      "name": "Panama",
-      "flag": "🇵🇦",
-      "group": "L"
-    }
+    { "name": "Mexico",                 "flag": "🇲🇽", "group": "A" },
+    { "name": "South Africa",           "flag": "🇿🇦", "group": "A" },
+    { "name": "South Korea",            "flag": "🇰🇷", "group": "A" },
+    { "name": "Czechia",                "flag": "🇨🇿", "group": "A" },
+    { "name": "Canada",                 "flag": "🇨🇦", "group": "B" },
+    { "name": "Switzerland",            "flag": "🇨🇭", "group": "B" },
+    { "name": "Qatar",                  "flag": "🇶🇦", "group": "B" },
+    { "name": "Bosnia and Herzegovina", "flag": "🇧🇦", "group": "B" },
+    { "name": "Brazil",                 "flag": "🇧🇷", "group": "C" },
+    { "name": "Morocco",                "flag": "🇲🇦", "group": "C" },
+    { "name": "Haiti",                  "flag": "🇭🇹", "group": "C" },
+    { "name": "Scotland",               "flag": "🏴", "group": "C" },
+    { "name": "United States",          "flag": "🇺🇸", "group": "D" },
+    { "name": "Paraguay",               "flag": "🇵🇾", "group": "D" },
+    { "name": "Australia",              "flag": "🇦🇺", "group": "D" },
+    { "name": "Türkiye",                "flag": "🇹🇷", "group": "D" },
+    { "name": "Germany",                "flag": "🇩🇪", "group": "E" },
+    { "name": "Curaçao",                "flag": "🇨🇼", "group": "E" },
+    { "name": "Ivory Coast",            "flag": "🇨🇮", "group": "E" },
+    { "name": "Ecuador",                "flag": "🇪🇨", "group": "E" },
+    { "name": "Netherlands",            "flag": "🇳🇱", "group": "F" },
+    { "name": "Japan",                  "flag": "🇯🇵", "group": "F" },
+    { "name": "Tunisia",                "flag": "🇹🇳", "group": "F" },
+    { "name": "Sweden",                 "flag": "🇸🇪", "group": "F" },
+    { "name": "Belgium",                "flag": "🇧🇪", "group": "G" },
+    { "name": "Egypt",                  "flag": "🇪🇬", "group": "G" },
+    { "name": "Iran",                   "flag": "🇮🇷", "group": "G" },
+    { "name": "New Zealand",            "flag": "🇳🇿", "group": "G" },
+    { "name": "Spain",                  "flag": "🇪🇸", "group": "H" },
+    { "name": "Cape Verde",             "flag": "🇨🇻", "group": "H" },
+    { "name": "Saudi Arabia",           "flag": "🇸🇦", "group": "H" },
+    { "name": "Uruguay",                "flag": "🇺🇾", "group": "H" },
+    { "name": "France",                 "flag": "🇫🇷", "group": "I" },
+    { "name": "Senegal",                "flag": "🇸🇳", "group": "I" },
+    { "name": "Iraq",                   "flag": "🇮🇶", "group": "I" },
+    { "name": "Norway",                 "flag": "🇳🇴", "group": "I" },
+    { "name": "Argentina",              "flag": "🇦🇷", "group": "J" },
+    { "name": "Algeria",                "flag": "🇩🇿", "group": "J" },
+    { "name": "Austria",                "flag": "🇦🇹", "group": "J" },
+    { "name": "Jordan",                 "flag": "🇯🇴", "group": "J" },
+    { "name": "Portugal",               "flag": "🇵🇹", "group": "K" },
+    { "name": "DR Congo",               "flag": "🇨🇩", "group": "K" },
+    { "name": "Uzbekistan",             "flag": "🇺🇿", "group": "K" },
+    { "name": "Colombia",               "flag": "🇨🇴", "group": "K" },
+    { "name": "England",                "flag": "🏴", "group": "L" },
+    { "name": "Croatia",                "flag": "🇭🇷", "group": "L" },
+    { "name": "Ghana",                  "flag": "🇬🇭", "group": "L" },
+    { "name": "Panama",                 "flag": "🇵🇦", "group": "L" }
   ]
 }
