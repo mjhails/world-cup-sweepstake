@@ -2,12 +2,14 @@
 <html lang="en">
 
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Tournament Standings</title>
 
 <link rel="stylesheet" href="style.css">
+
 </head>
 
 <body>
@@ -16,9 +18,7 @@
 
 <h1>🏆 Tournament Standings</h1>
 
-<p>
-Live leaderboard based on team progress
-</p>
+<p>Live leaderboard based on team progress</p>
 
 <div id="podium"></div>
 
@@ -28,233 +28,163 @@ Live leaderboard based on team progress
 
 <br>
 
-<a href="index.html">
-← Home
-</a>
+<a href="index.html">← Home</a>
 
 </div>
 
-<script src="app.js"></script>
+<script type="module">
 
-<script>
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-loadData().then(data => {
+const firebaseConfig = {
+  apiKey: "AIzaSyBmVb4vdoCJQg5uFC-yGogjKZzIsdhWZRY",
+  authDomain: "world-cup-sweepstake-202-d2993.firebaseapp.com",
+  projectId: "world-cup-sweepstake-202-d2993",
+  storageBucket: "world-cup-sweepstake-202-d2993.firebasestorage.app",
+  messagingSenderId: "417434337725",
+  appId: "1:417434337725:web:7728561dc86974fee152d4",
+  measurementId: "G-1YZKQ5ZT64"
+};
 
-loadLocalTournamentData();
+const firebaseApp = initializeApp(firebaseConfig);
+const db = getFirestore(firebaseApp);
 
-if(tournamentData){
-data = tournamentData;
+async function loadData(){
+
+    try {
+
+        const docRef = doc(db, "tournament", "data");
+        const docSnap = await getDoc(docRef);
+
+        if(docSnap.exists()) return docSnap.data();
+
+    } catch(e) {
+        console.log("Firebase unavailable, falling back to data.json");
+    }
+
+    const response = await fetch("data.json");
+    return await response.json();
+
 }
 
-const rankedPlayers =
-rankPlayers(data.players);
+function getStatusScore(status){
+    switch(status){
+        case "🏆 Champion":      return 100;
+        case "⭐ Finalist":      return 90;
+        case "🟣 Semi Final":    return 80;
+        case "🔵 Quarter Final": return 70;
+        case "🟠 Last 16":       return 60;
+        case "🟡 Last 32":       return 50;
+        case "🟢 Active":        return 40;
+        default:                 return 0;
+    }
+}
 
-buildPodium(rankedPlayers);
+function getProfilePhoto(name){
+    return localStorage.getItem(`photo-${name}`);
+}
 
-buildTable(rankedPlayers);
-
-});
+function rankPlayers(players){
+    return [...players].sort((a,b)=>{
+        const aScore = a.teams.reduce((t,team) => t + getStatusScore(team.status), 0);
+        const bScore = b.teams.reduce((t,team) => t + getStatusScore(team.status), 0);
+        return bScore - aScore;
+    });
+}
 
 function getPlayerScore(player){
-
-return player.teams.reduce((total,team)=>{
-
-return total +
-getStatusScore(team.status);
-
-},0);
-
+    return player.teams.reduce((total,team) => total + getStatusScore(team.status), 0);
 }
 
 function getBestTeam(player){
-
-let bestTeam = null;
-let bestScore = -1;
-
-player.teams.forEach(team=>{
-
-const score =
-getStatusScore(team.status);
-
-if(score > bestScore){
-
-bestScore = score;
-bestTeam = team;
-
+    let bestTeam = null;
+    let bestScore = -1;
+    player.teams.forEach(team=>{
+        const score = getStatusScore(team.status);
+        if(score > bestScore){ bestScore = score; bestTeam = team; }
+    });
+    return bestTeam;
 }
+
+loadData().then(data => {
+
+    const rankedPlayers = rankPlayers(data.players);
+    buildPodium(rankedPlayers);
+    buildTable(rankedPlayers);
 
 });
 
-return bestTeam;
-
-}
-
 function buildPodium(players){
 
-let html = `
-<div class="podium">
-`;
+    let html = `<div class="podium">`;
 
-if(players[1]){
+    if(players[1]){
+        html += `<div class="place second"><h2>🥈 2nd</h2>${getPlayerCard(players[1])}</div>`;
+    }
 
-html += `
-<div class="place second">
+    if(players[0]){
+        html += `<div class="place first"><h2>🥇 1st</h2>${getPlayerCard(players[0])}</div>`;
+    }
 
-<h2>🥈 2nd</h2>
+    if(players[2]){
+        html += `<div class="place third"><h2>🥉 3rd</h2>${getPlayerCard(players[2])}</div>`;
+    }
 
-${getPlayerCard(players[1])}
+    html += `</div>`;
 
-</div>
-`;
-
-}
-
-if(players[0]){
-
-html += `
-<div class="place first">
-
-<h2>🥇 1st</h2>
-
-${getPlayerCard(players[0])}
-
-</div>
-`;
-
-}
-
-if(players[2]){
-
-html += `
-<div class="place third">
-
-<h2>🥉 3rd</h2>
-
-${getPlayerCard(players[2])}
-
-</div>
-`;
-
-}
-
-html += `
-</div>
-`;
-
-document.getElementById(
-"podium"
-).innerHTML = html;
+    document.getElementById("podium").innerHTML = html;
 
 }
 
 function buildTable(players){
 
-let html = "";
+    let html = "";
 
-players.forEach((player,index)=>{
+    players.forEach((player,index)=>{
 
-const photo =
-getProfilePhoto(player.name);
+        const photo = getProfilePhoto(player.name);
+        const score = getPlayerScore(player);
+        const bestTeam = getBestTeam(player);
 
-const score =
-getPlayerScore(player);
+        html += `
+        <div class="table-row">
+            <div style="display:flex;align-items:center;gap:10px;">
+                ${photo ? `<img src="${photo}" style="width:50px;height:50px;border-radius:50%;object-fit:cover;">` : ""}
+                <div>
+                    <strong>${index + 1}. ${player.name}</strong><br>
+                    Score: ${score}<br>
+                    Best Team: ${bestTeam ? `${bestTeam.flag} ${bestTeam.name}` : "None"}
+                </div>
+            </div>
+        </div>`;
 
-const bestTeam =
-getBestTeam(player);
+    });
 
-html += `
-
-<div class="table-row">
-
-<div style="display:flex;align-items:center;gap:10px;">
-
-${photo
-? `<img
-src="${photo}"
-style="
-width:50px;
-height:50px;
-border-radius:50%;
-object-fit:cover;
-">`
-: ""
-}
-
-<div>
-
-<strong>
-${index + 1}. ${player.name}
-</strong>
-
-<br>
-
-Score:
-${score}
-
-<br>
-
-Best Team:
-${bestTeam
-? `${bestTeam.flag} ${bestTeam.name}`
-: "None"
-}
-
-</div>
-
-</div>
-
-</div>
-
-`;
-
-});
-
-document.getElementById(
-"fullTable"
-).innerHTML = html;
+    document.getElementById("fullTable").innerHTML = html;
 
 }
 
 function getPlayerCard(player){
 
-const photo =
-getProfilePhoto(player.name);
+    const photo = getProfilePhoto(player.name);
+    const score = getPlayerScore(player);
+    const bestTeam = getBestTeam(player);
 
-const score =
-getPlayerScore(player);
-
-const bestTeam =
-getBestTeam(player);
-
-return `
-
-${photo
-? `<img
-src="${photo}"
-class="profile-photo">`
-: ""
-}
-
-<h3>
-${player.name}
-</h3>
-
-<p>
-Score: ${score}
-</p>
-
-<p>
-${bestTeam
-? `${bestTeam.flag} ${bestTeam.name}`
-: ""
-}
-</p>
-
-`;
+    return `
+        ${photo ? `<img src="${photo}" class="profile-photo">` : ""}
+        <h3>${player.name}</h3>
+        <p>Score: ${score}</p>
+        <p>${bestTeam ? `${bestTeam.flag} ${bestTeam.name}` : ""}</p>
+    `;
 
 }
 
 </script>
+
+</body>
+
+</html>
 
 </body>
 
