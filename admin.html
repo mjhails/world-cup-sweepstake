@@ -47,6 +47,40 @@ font-size:0.9em;
 color:#86efac;
 }
 
+.score-row{
+display:flex;
+justify-content:space-between;
+align-items:center;
+gap:8px;
+margin-bottom:10px;
+background:#1e293b;
+padding:10px;
+border-radius:10px;
+flex-wrap:wrap;
+}
+
+.score-row .teams{
+flex:1;
+font-size:0.95em;
+}
+
+.score-row .score-inputs{
+display:flex;
+align-items:center;
+gap:6px;
+}
+
+.score-row input[type="number"]{
+width:55px;
+text-align:center;
+padding:6px;
+margin:0;
+}
+
+.score-row select{
+margin:0;
+}
+
 </style>
 
 </head>
@@ -112,6 +146,16 @@ No draw generated yet.
 <div id="statusManager">
 Loading teams...
 </div>
+
+</div>
+
+<div class="admin-section">
+
+<h2>🥅 Match Scores</h2>
+
+<p>Enter scores for completed matches</p>
+
+<div id="scoresManager">Loading matches...</div>
 
 </div>
 
@@ -260,6 +304,110 @@ function generateDraw(players, teams){
 }
 
 // ----------------------
+// Fixtures list (for scores manager)
+// ----------------------
+
+const ALL_FIXTURES = [
+    {date:"Thursday 11 June 2026",matches:[["Mexico","South Africa","20:00"],["South Korea","Czechia","23:00"]]},
+    {date:"Friday 12 June 2026",matches:[["Canada","Bosnia and Herzegovina","20:00"],["United States","Paraguay","23:00"]]},
+    {date:"Saturday 13 June 2026",matches:[["Qatar","Switzerland","20:00"],["Brazil","Morocco","23:00"]]},
+    {date:"Sunday 14 June 2026",matches:[["Haiti","Scotland","02:00"],["Australia","Türkiye","05:00"],["Germany","Curaçao","18:00"],["Netherlands","Japan","21:00"]]},
+    {date:"Monday 15 June 2026",matches:[["Ivory Coast","Ecuador","00:00"],["Sweden","Tunisia","03:00"],["Spain","Cape Verde","18:00"],["Belgium","Egypt","21:00"]]},
+    {date:"Tuesday 16 June 2026",matches:[["Iran","New Zealand","00:00"],["France","Senegal","03:00"],["Iraq","Norway","18:00"],["Argentina","Algeria","21:00"]]},
+    {date:"Wednesday 17 June 2026",matches:[["Austria","Jordan","00:00"],["Portugal","DR Congo","03:00"],["England","Croatia","18:00"],["Ghana","Panama","21:00"]]},
+    {date:"Thursday 18 June 2026",matches:[["South Africa","South Korea","17:00"],["Czechia","Mexico","20:00"],["Switzerland","Bosnia and Herzegovina","23:00"]]},
+    {date:"Friday 19 June 2026",matches:[["Paraguay","Canada","02:00"],["Morocco","Haiti","17:00"],["Scotland","Brazil","20:00"],["Türkiye","United States","23:00"]]},
+    {date:"Saturday 20 June 2026",matches:[["Curaçao","Australia","02:00"],["Japan","Ivory Coast","17:00"],["Ecuador","Germany","20:00"],["Tunisia","Netherlands","23:00"]]},
+    {date:"Sunday 21 June 2026",matches:[["Cape Verde","Saudi Arabia","17:00"],["Uruguay","Spain","20:00"],["Egypt","Iran","23:00"]]},
+    {date:"Monday 22 June 2026",matches:[["New Zealand","Belgium","02:00"],["Senegal","Iraq","17:00"],["Norway","France","20:00"],["Algeria","Austria","23:00"]]},
+    {date:"Tuesday 23 June 2026",matches:[["Jordan","Argentina","02:00"],["DR Congo","Uzbekistan","17:00"],["Colombia","Portugal","20:00"],["Croatia","Ghana","23:00"]]},
+    {date:"Wednesday 24 June 2026",matches:[["Panama","England","02:00"],["Mexico","South Korea","17:00"],["South Africa","Czechia","20:00"],["Bosnia and Herzegovina","Qatar","23:00"]]},
+    {date:"Thursday 25 June 2026",matches:[["Switzerland","Canada","02:00"],["Brazil","Haiti","17:00"],["Morocco","Scotland","20:00"],["United States","Australia","23:00"]]},
+    {date:"Friday 26 June 2026",matches:[["Türkiye","Paraguay","02:00"],["Germany","Ivory Coast","17:00"],["Curaçao","Ecuador","20:00"],["Netherlands","Sweden","23:00"]]},
+    {date:"Saturday 27 June 2026",matches:[["Japan","Tunisia","02:00"],["Spain","Saudi Arabia","17:00"],["Cape Verde","Uruguay","20:00"],["Belgium","Iran","23:00"]]},
+    {date:"Sunday 28 June 2026",matches:[["Egypt","New Zealand","02:00"],["France","Iraq","17:00"],["Senegal","Norway","20:00"],["Argentina","Austria","23:00"]]},
+    {date:"Monday 29 June 2026",matches:[["Algeria","Jordan","02:00"],["Portugal","Uzbekistan","17:00"],["DR Congo","Colombia","20:00"],["England","Ghana","23:00"]]},
+    {date:"Tuesday 30 June 2026",matches:[["Croatia","Panama","02:00"]]}
+];
+
+function matchKey(home, away, time){
+    return `${home}_vs_${away}_${time}`.replace(/\s+/g,"_");
+}
+
+function buildScoresManager(data){
+
+    const scores = data.scores || {};
+    let html = "";
+
+    ALL_FIXTURES.forEach(day => {
+
+        html += `<div style="margin-bottom:15px;"><strong>📅 ${day.date}</strong></div>`;
+
+        day.matches.forEach(match => {
+
+            const home = match[0];
+            const away = match[1];
+            const time = match[2];
+            const key = matchKey(home, away, time);
+            const saved = scores[key] || {};
+
+            html += `
+            <div class="score-row">
+                <div class="teams">${home} vs ${away} <small>(${time})</small></div>
+                <div class="score-inputs">
+                    <input type="number" min="0" max="99" id="score-home-${key}" value="${saved.homeScore ?? ""}" placeholder="0">
+                    <span>-</span>
+                    <input type="number" min="0" max="99" id="score-away-${key}" value="${saved.awayScore ?? ""}" placeholder="0">
+                    <select id="score-result-${key}">
+                        <option value="" ${!saved.result ? "selected" : ""}>Result</option>
+                        <option value="home" ${saved.result === "home" ? "selected" : ""}>${home} Win</option>
+                        <option value="draw" ${saved.result === "draw" ? "selected" : ""}>Draw</option>
+                        <option value="away" ${saved.result === "away" ? "selected" : ""}>${away} Win</option>
+                    </select>
+                </div>
+            </div>`;
+
+        });
+
+    });
+
+    document.getElementById("scoresManager").innerHTML = html;
+
+}
+
+function collectScores(){
+
+    const scores = {};
+
+    ALL_FIXTURES.forEach(day => {
+        day.matches.forEach(match => {
+
+            const home = match[0];
+            const away = match[1];
+            const time = match[2];
+            const key = matchKey(home, away, time);
+
+            const homeScore = document.getElementById(`score-home-${key}`)?.value;
+            const awayScore = document.getElementById(`score-away-${key}`)?.value;
+            const result   = document.getElementById(`score-result-${key}`)?.value;
+
+            if(homeScore !== "" || awayScore !== "" || result !== ""){
+                scores[key] = {
+                    home, away, time,
+                    homeScore: homeScore !== "" ? parseInt(homeScore) : null,
+                    awayScore: awayScore !== "" ? parseInt(awayScore) : null,
+                    result: result || null
+                };
+            }
+
+        });
+    });
+
+    return scores;
+
+}
+
+// ----------------------
 // Page Init
 // ----------------------
 
@@ -269,6 +417,7 @@ loadData().then(data => {
         data.tournamentMessage || "";
 
     buildStatusManager(data);
+    buildScoresManager(data);
 
     if(data.drawLocked){
         const button = document.getElementById("drawButton");
@@ -432,6 +581,8 @@ window.saveTournament = async function(){
             }
         });
     });
+
+    tournamentData.scores = collectScores();
 
     await saveToFirebase();
     showSaveStatus("✅ Saved! All users will see updates instantly.");
