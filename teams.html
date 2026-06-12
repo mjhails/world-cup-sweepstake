@@ -2,12 +2,14 @@
 <html lang="en">
 
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>My Teams</title>
 
 <link rel="stylesheet" href="style.css">
+
 </head>
 
 <body>
@@ -18,9 +20,7 @@
 
 <div id="playerProfile"></div>
 
-<h2 id="drawText">
-🎲 Drawing your teams...
-</h2>
+<h2 id="drawText">🎲 Loading your teams...</h2>
 
 <div id="summary"></div>
 
@@ -28,276 +28,170 @@
 
 <br>
 
-<a href="index.html">
-← Home
-</a>
+<a href="index.html">← Home</a>
 
 </div>
 
-<script src="app.js"></script>
+<script type="module">
 
-<script>
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-const params =
-new URLSearchParams(
-window.location.search
-);
+const firebaseConfig = {
+  apiKey: "AIzaSyBmVb4vdoCJQg5uFC-yGogjKZzIsdhWZRY",
+  authDomain: "world-cup-sweepstake-202-d2993.firebaseapp.com",
+  projectId: "world-cup-sweepstake-202-d2993",
+  storageBucket: "world-cup-sweepstake-202-d2993.firebasestorage.app",
+  messagingSenderId: "417434337725",
+  appId: "1:417434337725:web:7728561dc86974fee152d4",
+  measurementId: "G-1YZKQ5ZT64"
+};
 
-const playerName =
-params.get("player");
+const firebaseApp = initializeApp(firebaseConfig);
+const db = getFirestore(firebaseApp);
 
-loadData().then(data => {
+const params = new URLSearchParams(window.location.search);
+const playerName = params.get("player");
 
-const player =
-getPlayer(playerName);
+async function loadData(){
 
-if(!player){
+    try {
 
-document
-.getElementById("teams")
-.innerHTML =
-"<h2>Player not found</h2>";
+        const docRef = doc(db, "tournament", "data");
+        const docSnap = await getDoc(docRef);
 
-return;
+        if(docSnap.exists()) return docSnap.data();
+
+    } catch(e) {
+        console.log("Firebase unavailable, falling back to data.json");
+    }
+
+    const response = await fetch("data.json");
+    return await response.json();
 
 }
 
-buildProfile(player);
+function getStatusScore(status){
+    switch(status){
+        case "🏆 Champion":      return 100;
+        case "⭐ Finalist":      return 90;
+        case "🟣 Semi Final":    return 80;
+        case "🔵 Quarter Final": return 70;
+        case "🟠 Last 16":       return 60;
+        case "🟡 Last 32":       return 50;
+        case "🟢 Active":        return 40;
+        default:                 return 0;
+    }
+}
 
-showAllTeams(player);
+function getProfilePhoto(name){
+    return localStorage.getItem(`photo-${name}`);
+}
+
+function saveProfilePhoto(name, data){
+    localStorage.setItem(`photo-${name}`, data);
+}
+
+loadData().then(data => {
+
+    const player = data.players.find(
+        p => p.name.toLowerCase() === playerName.toLowerCase()
+    );
+
+    if(!player){
+        document.getElementById("teams").innerHTML = "<h2>Player not found</h2>";
+        return;
+    }
+
+    buildProfile(player);
+    showAllTeams(player);
+    buildSummary(player);
 
 });
 
 function buildProfile(player){
 
-const photo =
-getProfilePhoto(player.name);
+    const photo = getProfilePhoto(player.name);
+    let html = "";
 
-let html = "";
+    if(photo){
+        html += `<img src="${photo}" class="profile-photo">`;
+    }
 
-if(photo){
+    html += `
+        <h2>${player.name}</h2>
+        <input type="file" accept="image/*" onchange="uploadPhoto(event,'${player.name}')">
+    `;
 
-html += `
-<img
-src="${photo}"
-class="profile-photo">
-`;
-
-}
-
-html += `
-
-<h2>
-${player.name}
-</h2>
-
-<input
-type="file"
-accept="image/*"
-onchange="uploadPhoto(event,'${player.name}')">
-
-`;
-
-document
-.getElementById(
-"playerProfile"
-)
-.innerHTML = html;
+    document.getElementById("playerProfile").innerHTML = html;
 
 }
 
-function uploadPhoto(
-event,
-playerName
-){
+window.uploadPhoto = function(event, name){
 
-const file =
-event.target.files[0];
+    const file = event.target.files[0];
+    if(!file) return;
 
-if(!file) return;
+    const reader = new FileReader();
 
-const reader =
-new FileReader();
+    reader.onload = function(e){
+        saveProfilePhoto(name, e.target.result);
+        location.reload();
+    };
 
-reader.onload =
-function(e){
-
-saveProfilePhoto(
-playerName,
-e.target.result
-);
-
-location.reload();
-
-};
-
-reader.readAsDataURL(file);
+    reader.readAsDataURL(file);
 
 }
 
 function buildSummary(player){
 
-const active =
-player.teams.filter(
-team =>
-team.status !==
-"🔴 Eliminated"
-).length;
+    const active = player.teams.filter(t => t.status !== "🔴 Eliminated").length;
 
-let bestTeam =
-"None";
+    let bestTeam = "None";
+    let bestScore = 0;
 
-let bestScore =
-0;
+    player.teams.forEach(team=>{
+        const score = getStatusScore(team.status);
+        if(score > bestScore){
+            bestScore = score;
+            bestTeam = `${team.flag} ${team.name}`;
+        }
+    });
 
-player.teams.forEach(team=>{
-
-const score =
-getStatusScore(
-team.status
-);
-
-if(score > bestScore){
-
-bestScore = score;
-
-bestTeam =
-`${team.flag} ${team.name}`;
-
-}
-
-});
-
-document
-.getElementById(
-"summary"
-)
-.innerHTML = `
-
-<div class="admin-section">
-
-<h3>
-📊 Team Summary
-</h3>
-
-<p>
-Active Teams:
-${active}
-</p>
-
-<p>
-Best Team:
-${bestTeam}
-</p>
-
-</div>
-
-`;
+    document.getElementById("summary").innerHTML = `
+        <div class="admin-section">
+            <h3>📊 Team Summary</h3>
+            <p>Active Teams: ${active}</p>
+            <p>Best Team: ${bestTeam}</p>
+        </div>
+    `;
 
 }
 
 function showAllTeams(player){
 
-document
-.getElementById(
-"drawText"
-)
-.innerHTML =
-`Welcome back ${player.name} 👋`;
+    document.getElementById("drawText").innerHTML = `Welcome back ${player.name} 👋`;
 
-player.teams.forEach(team=>{
-
-addTeamCard(team);
-
-});
+    player.teams.forEach(team=>{
+        addTeamCard(team);
+    });
 
 }
 
-function animateReveal(player){
+function addTeamCard(team, animate=false){
 
-let current = 0;
+    const card = document.createElement("div");
+    card.className = animate ? "team-card reveal" : "team-card";
 
-function reveal(){
+    card.innerHTML = `
+        <div class="flag">${team.flag}</div>
+        <div>
+            <h3>${team.name}</h3>
+            <div class="status">${team.status}</div>
+        </div>
+    `;
 
-if(
-current >=
-player.teams.length
-){
-
-document
-.getElementById(
-"drawText"
-)
-.innerHTML =
-"🏆 Teams Revealed";
-
-localStorage.setItem(
-`revealed-${player.name}`,
-"true"
-);
-
-return;
-
-}
-
-addTeamCard(
-player.teams[current],
-true
-);
-
-current++;
-
-setTimeout(
-reveal,
-1200
-);
-
-}
-
-reveal();
-
-}
-
-function addTeamCard(
-team,
-animate = false
-){
-
-const card =
-document.createElement("div");
-
-card.className =
-animate
-? "team-card reveal"
-: "team-card";
-
-card.innerHTML = `
-
-<div class="flag">
-
-${team.flag}
-
-</div>
-
-<div>
-
-<h3>
-${team.name}
-</h3>
-
-<div class="status">
-${team.status}
-</div>
-
-</div>
-
-`;
-
-document
-.getElementById(
-"teams"
-)
-.appendChild(card);
+    document.getElementById("teams").appendChild(card);
 
 }
 
