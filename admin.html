@@ -213,15 +213,12 @@ let tournamentData = null;
 async function loadData() {
 
     try {
-
         const docRef = doc(db, "tournament", "data");
         const docSnap = await getDoc(docRef);
-
         if (docSnap.exists()) {
             tournamentData = docSnap.data();
             return tournamentData;
         }
-
     } catch (error) {
         console.log("Firebase unavailable, falling back to data.json", error);
     }
@@ -229,7 +226,6 @@ async function loadData() {
     const response = await fetch("data.json");
     tournamentData = await response.json();
     return tournamentData;
-
 }
 
 // ----------------------
@@ -237,12 +233,9 @@ async function loadData() {
 // ----------------------
 
 async function saveToFirebase() {
-
     if (!tournamentData) return;
-
     const docRef = doc(db, "tournament", "data");
     await setDoc(docRef, tournamentData);
-
 }
 
 // ----------------------
@@ -271,68 +264,146 @@ function shuffle(array){
 }
 
 function generateDraw(players, teams){
-
     players.forEach(player=>{ player.teams = []; });
-
     const pot1 = ["Argentina","France","Brazil","Spain","England","Portugal","Germany","Netherlands","Belgium","Croatia","Uruguay","Morocco"];
     const pot2 = ["United States","Mexico","Japan","Switzerland","Colombia","Senegal","South Korea","Ecuador","Norway","Sweden","Paraguay","Türkiye"];
     const pot3 = ["Canada","Austria","Ghana","Egypt","Algeria","Tunisia","Ivory Coast","Panama","Scotland","Australia","Qatar","Saudi Arabia"];
     const pot4 = ["Bosnia and Herzegovina","Cape Verde","Curaçao","Czechia","DR Congo","Haiti","Iran","Iraq","Jordan","New Zealand","South Africa","Uzbekistan"];
-
     const pots = [pot1, pot2, pot3, pot4];
-
     pots.forEach(pot=>{
-
         const potTeams = shuffle(teams.filter(team => pot.includes(team.name)));
-
         for(let i=0; i<players.length; i++){
-            if(i < potTeams.length){
-                players[i].teams.push(potTeams[i]);
-            }
+            if(i < potTeams.length) players[i].teams.push(potTeams[i]);
         }
-
         const leftovers = potTeams.slice(players.length);
         leftovers.forEach(team=>{
             const randomPlayer = players[Math.floor(Math.random() * players.length)];
             randomPlayer.teams.push(team);
         });
-
     });
-
     return players;
-
 }
 
 // ----------------------
-// Fixtures list (for scores manager)
+// Fixtures — must match fixtures.html exactly (including date)
 // ----------------------
 
 const ALL_FIXTURES = [
-    {date:"Thursday 11 June 2026",matches:[["Mexico","South Africa","20:00"],["South Korea","Czechia","23:00"]]},
-    {date:"Friday 12 June 2026",matches:[["Canada","Bosnia and Herzegovina","20:00"],["United States","Paraguay","23:00"]]},
-    {date:"Saturday 13 June 2026",matches:[["Qatar","Switzerland","20:00"],["Brazil","Morocco","23:00"]]},
-    {date:"Sunday 14 June 2026",matches:[["Haiti","Scotland","02:00"],["Australia","Türkiye","05:00"],["Germany","Curaçao","18:00"],["Netherlands","Japan","21:00"]]},
-    {date:"Monday 15 June 2026",matches:[["Ivory Coast","Ecuador","00:00"],["Sweden","Tunisia","03:00"],["Spain","Cape Verde","18:00"],["Belgium","Egypt","21:00"]]},
-    {date:"Tuesday 16 June 2026",matches:[["Iran","New Zealand","00:00"],["France","Senegal","03:00"],["Iraq","Norway","18:00"],["Argentina","Algeria","21:00"]]},
-    {date:"Wednesday 17 June 2026",matches:[["Austria","Jordan","00:00"],["Portugal","DR Congo","03:00"],["England","Croatia","18:00"],["Ghana","Panama","21:00"]]},
-    {date:"Thursday 18 June 2026",matches:[["South Africa","South Korea","17:00"],["Czechia","Mexico","20:00"],["Switzerland","Bosnia and Herzegovina","23:00"]]},
-    {date:"Friday 19 June 2026",matches:[["Paraguay","Canada","02:00"],["Morocco","Haiti","17:00"],["Scotland","Brazil","20:00"],["Türkiye","United States","23:00"]]},
-    {date:"Saturday 20 June 2026",matches:[["Curaçao","Australia","02:00"],["Japan","Ivory Coast","17:00"],["Ecuador","Germany","20:00"],["Tunisia","Netherlands","23:00"]]},
-    {date:"Sunday 21 June 2026",matches:[["Cape Verde","Saudi Arabia","17:00"],["Uruguay","Spain","20:00"],["Egypt","Iran","23:00"]]},
-    {date:"Monday 22 June 2026",matches:[["New Zealand","Belgium","02:00"],["Senegal","Iraq","17:00"],["Norway","France","20:00"],["Algeria","Austria","23:00"]]},
-    {date:"Tuesday 23 June 2026",matches:[["Jordan","Argentina","02:00"],["DR Congo","Uzbekistan","17:00"],["Colombia","Portugal","20:00"],["Croatia","Ghana","23:00"]]},
-    {date:"Wednesday 24 June 2026",matches:[["Panama","England","02:00"],["Mexico","South Korea","17:00"],["South Africa","Czechia","20:00"],["Bosnia and Herzegovina","Qatar","23:00"]]},
-    {date:"Thursday 25 June 2026",matches:[["Switzerland","Canada","02:00"],["Brazil","Haiti","17:00"],["Morocco","Scotland","20:00"],["United States","Australia","23:00"]]},
-    {date:"Friday 26 June 2026",matches:[["Türkiye","Paraguay","02:00"],["Germany","Ivory Coast","17:00"],["Curaçao","Ecuador","20:00"],["Netherlands","Sweden","23:00"]]},
-    {date:"Saturday 27 June 2026",matches:[["Japan","Tunisia","02:00"],["Spain","Saudi Arabia","17:00"],["Cape Verde","Uruguay","20:00"],["Belgium","Iran","23:00"]]},
-    {date:"Sunday 28 June 2026",matches:[["Egypt","New Zealand","02:00"],["France","Iraq","17:00"],["Senegal","Norway","20:00"],["Argentina","Austria","23:00"]]},
-    {date:"Monday 29 June 2026",matches:[["Algeria","Jordan","02:00"],["Portugal","Uzbekistan","17:00"],["DR Congo","Colombia","20:00"],["England","Ghana","23:00"]]},
-    {date:"Tuesday 30 June 2026",matches:[["Croatia","Panama","02:00"]]}
+    {date:"Thursday 11 June 2026",matches:[
+        ["Mexico","South Africa","20:00","11Jun"],
+        ["South Korea","Czechia","23:00","11Jun"]
+    ]},
+    {date:"Friday 12 June 2026",matches:[
+        ["Canada","Bosnia and Herzegovina","20:00","12Jun"],
+        ["United States","Paraguay","02:00","13Jun"]
+    ]},
+    {date:"Saturday 13 June 2026",matches:[
+        ["Qatar","Switzerland","20:00","13Jun"],
+        ["Brazil","Morocco","23:00","13Jun"]
+    ]},
+    {date:"Sunday 14 June 2026",matches:[
+        ["Haiti","Scotland","02:00","14Jun"],
+        ["Australia","Türkiye","05:00","14Jun"],
+        ["Germany","Curaçao","18:00","14Jun"],
+        ["Netherlands","Japan","21:00","14Jun"]
+    ]},
+    {date:"Monday 15 June 2026",matches:[
+        ["Ivory Coast","Ecuador","00:00","15Jun"],
+        ["Sweden","Tunisia","03:00","15Jun"],
+        ["Spain","Cape Verde","17:00","15Jun"],
+        ["Belgium","Egypt","20:00","15Jun"],
+        ["Saudi Arabia","Uruguay","23:00","15Jun"]
+    ]},
+    {date:"Tuesday 16 June 2026",matches:[
+        ["Iran","New Zealand","02:00","16Jun"],
+        ["France","Senegal","20:00","16Jun"],
+        ["Iraq","Norway","23:00","16Jun"]
+    ]},
+    {date:"Wednesday 17 June 2026",matches:[
+        ["Argentina","Algeria","02:00","17Jun"],
+        ["Austria","Jordan","05:00","17Jun"],
+        ["Portugal","DR Congo","18:00","17Jun"],
+        ["England","Croatia","21:00","17Jun"]
+    ]},
+    {date:"Thursday 18 June 2026",matches:[
+        ["Ghana","Panama","00:00","18Jun"],
+        ["Uzbekistan","Colombia","03:00","18Jun"],
+        ["Czechia","South Africa","17:00","18Jun"],
+        ["Switzerland","Bosnia and Herzegovina","20:00","18Jun"],
+        ["Canada","Qatar","23:00","18Jun"]
+    ]},
+    {date:"Friday 19 June 2026",matches:[
+        ["Mexico","South Korea","02:00","19Jun"],
+        ["United States","Australia","20:00","19Jun"],
+        ["Scotland","Morocco","23:00","19Jun"]
+    ]},
+    {date:"Saturday 20 June 2026",matches:[
+        ["Brazil","Haiti","01:30","20Jun"],
+        ["Türkiye","Paraguay","04:00","20Jun"],
+        ["Netherlands","Sweden","18:00","20Jun"],
+        ["Germany","Ivory Coast","21:00","20Jun"]
+    ]},
+    {date:"Sunday 21 June 2026",matches:[
+        ["Ecuador","Curaçao","01:00","21Jun"],
+        ["Tunisia","Japan","05:00","21Jun"],
+        ["Spain","Saudi Arabia","17:00","21Jun"],
+        ["Belgium","Iran","20:00","21Jun"],
+        ["Uruguay","Cape Verde","23:00","21Jun"]
+    ]},
+    {date:"Monday 22 June 2026",matches:[
+        ["New Zealand","Egypt","02:00","22Jun"],
+        ["Argentina","Austria","18:00","22Jun"],
+        ["France","Iraq","22:00","22Jun"]
+    ]},
+    {date:"Tuesday 23 June 2026",matches:[
+        ["Norway","Senegal","01:00","23Jun"],
+        ["Jordan","Algeria","04:00","23Jun"],
+        ["Portugal","Uzbekistan","18:00","23Jun"],
+        ["England","Ghana","21:00","23Jun"]
+    ]},
+    {date:"Wednesday 24 June 2026",matches:[
+        ["Panama","Croatia","00:00","24Jun"],
+        ["Colombia","DR Congo","03:00","24Jun"],
+        ["Switzerland","Canada","20:00","24Jun"],
+        ["Bosnia and Herzegovina","Qatar","20:00","24Jun"],
+        ["Scotland","Brazil","23:00","24Jun"],
+        ["Morocco","Haiti","23:00","24Jun"]
+    ]},
+    {date:"Thursday 25 June 2026",matches:[
+        ["Czechia","Mexico","02:00","25Jun"],
+        ["South Africa","South Korea","02:00","25Jun"],
+        ["Ecuador","Germany","21:00","25Jun"],
+        ["Curaçao","Ivory Coast","21:00","25Jun"]
+    ]},
+    {date:"Friday 26 June 2026",matches:[
+        ["Tunisia","Netherlands","00:00","26Jun"],
+        ["Japan","Sweden","00:00","26Jun"],
+        ["Türkiye","United States","03:00","26Jun"],
+        ["Paraguay","Australia","03:00","26Jun"],
+        ["Norway","France","20:00","26Jun"],
+        ["Senegal","Iraq","20:00","26Jun"]
+    ]},
+    {date:"Saturday 27 June 2026",matches:[
+        ["Uruguay","Spain","01:00","27Jun"],
+        ["Cape Verde","Saudi Arabia","01:00","27Jun"],
+        ["New Zealand","Belgium","04:00","27Jun"],
+        ["Egypt","Iran","04:00","27Jun"],
+        ["Panama","England","22:00","27Jun"],
+        ["Croatia","Ghana","22:00","27Jun"]
+    ]}
 ];
 
-function matchKey(home, away, time){
-    return `${home}_vs_${away}_${time}`.replace(/\s+/g,"_");
+// ----------------------
+// Match key — must match fixtures.html exactly
+// ----------------------
+
+function matchKey(home, away, time, date){
+    return `${home}_vs_${away}_${time}_${date}`;
 }
+
+// ----------------------
+// Build Scores Manager
+// ----------------------
 
 function buildScoresManager(data){
 
@@ -348,7 +419,8 @@ function buildScoresManager(data){
             const home = match[0];
             const away = match[1];
             const time = match[2];
-            const key = matchKey(home, away, time);
+            const date = match[3];
+            const key  = matchKey(home, away, time, date);
             const saved = scores[key] || {};
 
             html += `
@@ -372,8 +444,11 @@ function buildScoresManager(data){
     });
 
     document.getElementById("scoresManager").innerHTML = html;
-
 }
+
+// ----------------------
+// Collect Scores
+// ----------------------
 
 function collectScores(){
 
@@ -385,15 +460,16 @@ function collectScores(){
             const home = match[0];
             const away = match[1];
             const time = match[2];
-            const key = matchKey(home, away, time);
+            const date = match[3];
+            const key  = matchKey(home, away, time, date);
 
             const homeScore = document.getElementById(`score-home-${key}`)?.value;
             const awayScore = document.getElementById(`score-away-${key}`)?.value;
-            const result   = document.getElementById(`score-result-${key}`)?.value;
+            const result    = document.getElementById(`score-result-${key}`)?.value;
 
             if(homeScore !== "" || awayScore !== "" || result !== ""){
                 scores[key] = {
-                    home, away, time,
+                    home, away, time, date,
                     homeScore: homeScore !== "" ? parseInt(homeScore) : null,
                     awayScore: awayScore !== "" ? parseInt(awayScore) : null,
                     result: result || null
@@ -404,7 +480,6 @@ function collectScores(){
     });
 
     return scores;
-
 }
 
 // ----------------------
@@ -438,7 +513,6 @@ loadData().then(data => {
 window.generateTournamentDraw = async function(){
 
     const data = await loadData();
-
     const names = document.getElementById("participants")
         .value.split("\n").map(n=>n.trim()).filter(n=>n);
 
@@ -464,7 +538,6 @@ window.generateTournamentDraw = async function(){
     document.getElementById("drawButton").disabled = true;
 
     alert("Official draw generated and locked!");
-
 }
 
 // ----------------------
@@ -476,19 +549,14 @@ function renderDraw(players){
     let html = "";
 
     players.forEach(player=>{
-
         html += `<div class="player-result"><h3>${player.name}</h3>`;
-
         player.teams.forEach(team=>{
             html += `<div>${team.flag} ${team.name} (Group ${team.group})</div>`;
         });
-
         html += `</div>`;
-
     });
 
     document.getElementById("drawOutput").innerHTML = html;
-
 }
 
 // ----------------------
@@ -507,7 +575,6 @@ window.saveMessage = async function(){
 
     await saveToFirebase();
     showSaveStatus("✅ Message saved!");
-
 }
 
 // ----------------------
@@ -537,7 +604,6 @@ function buildStatusManager(data){
     });
 
     document.getElementById("statusManager").innerHTML = html;
-
 }
 
 function getTeamStatus(teamName){
@@ -550,7 +616,6 @@ function getTeamStatus(teamName){
     }
 
     return null;
-
 }
 
 // ----------------------
@@ -586,7 +651,6 @@ window.saveTournament = async function(){
 
     await saveToFirebase();
     showSaveStatus("✅ Saved! All users will see updates instantly.");
-
 }
 
 // ----------------------
@@ -606,7 +670,6 @@ window.unlockDraw = async function(){
     button.innerHTML = "🎲 Generate Draw";
 
     alert("Draw unlocked successfully");
-
 }
 
 // ----------------------
@@ -630,7 +693,6 @@ window.downloadDataFile = function(){
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-
 }
 
 // ----------------------
@@ -638,11 +700,9 @@ window.downloadDataFile = function(){
 // ----------------------
 
 function showSaveStatus(message){
-
     const el = document.getElementById("saveStatus");
     el.innerText = message;
     setTimeout(()=>{ el.innerText = ""; }, 3000);
-
 }
 
 </script>
