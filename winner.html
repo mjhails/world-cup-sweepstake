@@ -58,6 +58,61 @@
     color: #86efac;
 }
 
+.player-card {
+    background: #1e293b;
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 12px;
+    text-align: left;
+}
+
+.player-card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.player-card-info {
+    flex: 1;
+}
+
+.player-card-info strong {
+    font-size: 1.1em;
+}
+
+.player-total-points {
+    font-size: 1.3em;
+    font-weight: bold;
+    color: #86efac;
+}
+
+.team-points-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 8px;
+    border-radius: 8px;
+    background: #0f172a;
+    margin-bottom: 6px;
+    font-size: 0.88em;
+}
+
+.team-points-row:last-child {
+    margin-bottom: 0;
+}
+
+.team-pts-value {
+    font-weight: bold;
+    color: #86efac;
+    white-space: nowrap;
+}
+
+.rank-badge {
+    font-size: 1.4em;
+    margin-right: 4px;
+}
+
 </style>
 
 </head>
@@ -72,7 +127,7 @@
 
 <div class="notice-box">
     <strong>💰 £55 Prize Pot Notice</strong>
-    The £55 prize pot will go to the person whose team wins the entire tournament — regardless of points. The points tally below is just a bit of fun... but Mike might buy the winner a little prize 
+    The £55 prize pot will go to the person whose team wins the entire tournament — regardless of points. The points tally below is just a bit of fun... but Mike might buy the winner a little prize 😉
 </div>
 
 <div class="rules-box">
@@ -80,7 +135,7 @@
     <div class="rule-row"><span>Your team wins a match</span><span class="points-badge">+3 pts</span></div>
     <div class="rule-row"><span>Your team draws a match</span><span class="points-badge">+1 pt</span></div>
     <div class="rule-row"><span>Your team loses a match</span><span class="points-badge">0 pts</span></div>
-    <div class="rule-row"><span>Points are tallied across all your teams</span><span>⚽</span></div>
+    <div class="rule-row"><span>Points tallied across all your teams</span><span>⚽</span></div>
     <div class="rule-row"><span>Most points at the end wins the fun prize!</span><span>🎁</span></div>
 </div>
 
@@ -131,12 +186,38 @@ function getProfilePhoto(name){
 }
 
 // ----------------------
-// Points from match results
+// Hardcoded past results (same as fixtures.html)
 // ----------------------
 
-function calcPointsFromScores(players, scores){
+const hardcodedScores = {
+    "Mexico_vs_South Africa_20:00_11Jun":              { home:"Mexico",         away:"South Africa",           homeScore:2, awayScore:0, result:"home" },
+    "South Korea_vs_Czechia_23:00_11Jun":              { home:"South Korea",    away:"Czechia",                homeScore:2, awayScore:1, result:"home" },
+    "Canada_vs_Bosnia and Herzegovina_20:00_12Jun":    { home:"Canada",         away:"Bosnia and Herzegovina", homeScore:1, awayScore:1, result:"draw" },
+    "United States_vs_Paraguay_02:00_13Jun":           { home:"United States",  away:"Paraguay",               homeScore:4, awayScore:1, result:"home" },
+    "Qatar_vs_Switzerland_20:00_13Jun":                { home:"Qatar",          away:"Switzerland",            homeScore:1, awayScore:1, result:"draw" },
+    "Brazil_vs_Morocco_23:00_13Jun":                   { home:"Brazil",         away:"Morocco",                homeScore:1, awayScore:1, result:"draw" },
+    "Haiti_vs_Scotland_02:00_14Jun":                   { home:"Haiti",          away:"Scotland",               homeScore:0, awayScore:1, result:"away" },
+    "Australia_vs_Türkiye_05:00_14Jun":                { home:"Australia",      away:"Türkiye",                homeScore:2, awayScore:0, result:"home" },
+    "Germany_vs_Curaçao_18:00_14Jun":                  { home:"Germany",        away:"Curaçao",                homeScore:7, awayScore:1, result:"home" },
+    "Netherlands_vs_Japan_21:00_14Jun":                { home:"Netherlands",    away:"Japan",                  homeScore:2, awayScore:2, result:"draw" },
+    "Ivory Coast_vs_Ecuador_00:00_15Jun":              { home:"Ivory Coast",    away:"Ecuador",                homeScore:1, awayScore:0, result:"home" },
+    "Sweden_vs_Tunisia_03:00_15Jun":                   { home:"Sweden",         away:"Tunisia",                homeScore:5, awayScore:1, result:"home" },
+    "Spain_vs_Cape Verde_17:00_15Jun":                 { home:"Spain",          away:"Cape Verde",             homeScore:0, awayScore:0, result:"draw" },
+    "Belgium_vs_Egypt_20:00_15Jun":                    { home:"Belgium",        away:"Egypt",                  homeScore:1, awayScore:1, result:"draw" },
+    "Saudi Arabia_vs_Uruguay_23:00_15Jun":             { home:"Saudi Arabia",   away:"Uruguay",                homeScore:1, awayScore:1, result:"draw" },
+    "Iran_vs_New Zealand_02:00_16Jun":                 { home:"Iran",           away:"New Zealand",            homeScore:2, awayScore:2, result:"draw" },
+};
 
-    // Build a map of teamName -> player
+// ----------------------
+// Calculate points per player AND per team
+// ----------------------
+
+function calcPoints(players, firebaseScores){
+
+    // Merge hardcoded + firebase scores (firebase takes priority for same key)
+    const allScores = { ...hardcodedScores, ...(firebaseScores || {}) };
+
+    // Build teamName -> playerName map
     const teamToPlayer = {};
     players.forEach(player => {
         player.teams.forEach(team => {
@@ -144,70 +225,62 @@ function calcPointsFromScores(players, scores){
         });
     });
 
-    // Build points map: playerName -> points
-    const points = {};
-    players.forEach(p => { points[p.name] = 0; });
+    // player points total
+    const playerPoints = {};
+    players.forEach(p => { playerPoints[p.name] = 0; });
 
-    Object.values(scores || {}).forEach(match => {
+    // team points: teamName -> points
+    const teamPoints = {};
 
-        if(match.homeScore === null || match.awayScore === null) return;
+    Object.values(allScores).forEach(match => {
+
+        if(match.result === null || match.result === undefined || match.result === "") return;
 
         const homePlayer = teamToPlayer[match.home];
         const awayPlayer = teamToPlayer[match.away];
 
         if(match.result === "home"){
-            if(homePlayer) points[homePlayer] = (points[homePlayer] || 0) + 3;
+            if(homePlayer) playerPoints[homePlayer] = (playerPoints[homePlayer] || 0) + 3;
+            teamPoints[match.home] = (teamPoints[match.home] || 0) + 3;
         } else if(match.result === "away"){
-            if(awayPlayer) points[awayPlayer] = (points[awayPlayer] || 0) + 3;
+            if(awayPlayer) playerPoints[awayPlayer] = (playerPoints[awayPlayer] || 0) + 3;
+            teamPoints[match.away] = (teamPoints[match.away] || 0) + 3;
         } else if(match.result === "draw"){
-            if(homePlayer) points[homePlayer] = (points[homePlayer] || 0) + 1;
-            if(awayPlayer) points[awayPlayer] = (points[awayPlayer] || 0) + 1;
+            if(homePlayer) playerPoints[homePlayer] = (playerPoints[homePlayer] || 0) + 1;
+            if(awayPlayer) playerPoints[awayPlayer] = (playerPoints[awayPlayer] || 0) + 1;
+            teamPoints[match.home] = (teamPoints[match.home] || 0) + 1;
+            teamPoints[match.away] = (teamPoints[match.away] || 0) + 1;
         }
 
     });
 
-    return points;
+    return { playerPoints, teamPoints };
 }
 
-function rankPlayers(players, points){
-    return [...players].sort((a, b) => (points[b.name] || 0) - (points[a.name] || 0));
-}
-
-function getBestTeam(player){
-    return player.teams.length > 0 ? player.teams[0] : null;
+function rankPlayers(players, playerPoints){
+    return [...players].sort((a, b) => (playerPoints[b.name] || 0) - (playerPoints[a.name] || 0));
 }
 
 // ----------------------
 // Build Podium
 // ----------------------
 
-function buildPodium(players, points){
+function buildPodium(players, playerPoints, teamPoints){
 
     let html = `<div class="podium">`;
 
-    if(players[1]){
-        html += `<div class="place second"><h2>🥈 2nd</h2>${getPlayerCard(players[1], points)}</div>`;
-    }
-
-    if(players[0]){
-        html += `<div class="place first"><h2>🥇 1st</h2>${getPlayerCard(players[0], points)}</div>`;
-    }
-
-    if(players[2]){
-        html += `<div class="place third"><h2>🥉 3rd</h2>${getPlayerCard(players[2], points)}</div>`;
-    }
+    if(players[1]) html += `<div class="place second"><h2>🥈 2nd</h2>${getPlayerCard(players[1], playerPoints, teamPoints)}</div>`;
+    if(players[0]) html += `<div class="place first"><h2>🥇 1st</h2>${getPlayerCard(players[0], playerPoints, teamPoints)}</div>`;
+    if(players[2]) html += `<div class="place third"><h2>🥉 3rd</h2>${getPlayerCard(players[2], playerPoints, teamPoints)}</div>`;
 
     html += `</div>`;
-
     document.getElementById("podium").innerHTML = html;
 }
 
-function getPlayerCard(player, points){
-
+function getPlayerCard(player, playerPoints, teamPoints){
     const photo = getProfilePhoto(player.name);
-    const pts = points[player.name] || 0;
-    const bestTeam = getBestTeam(player);
-
+    const pts = playerPoints[player.name] || 0;
+    const bestTeam = player.teams[0];
     return `
         ${photo ? `<img src="${photo}" class="profile-photo">` : ""}
         <h3>${player.name}</h3>
@@ -220,27 +293,37 @@ function getPlayerCard(player, points){
 // Build Full Table
 // ----------------------
 
-function buildTable(players, points){
+function buildTable(players, playerPoints, teamPoints){
 
+    const rankEmoji = ["🥇","🥈","🥉"];
     let html = "";
 
     players.forEach((player, index) => {
 
         const photo = getProfilePhoto(player.name);
-        const pts = points[player.name] || 0;
+        const pts = playerPoints[player.name] || 0;
+        const rank = rankEmoji[index] || `${index + 1}.`;
 
-        const teamList = player.teams.map(t => `${t.flag} ${t.name}`).join(", ");
+        // Build team breakdown rows
+        const teamRows = player.teams.map(team => {
+            const tPts = teamPoints[team.name] || 0;
+            return `
+            <div class="team-points-row">
+                <span>${team.flag} ${team.name}</span>
+                <span class="team-pts-value">${tPts} pt${tPts !== 1 ? "s" : ""}</span>
+            </div>`;
+        }).join("");
 
         html += `
-        <div class="table-row">
-            <div style="display:flex;align-items:center;gap:10px;">
+        <div class="player-card">
+            <div class="player-card-header">
                 ${photo ? `<img src="${photo}" style="width:50px;height:50px;border-radius:50%;object-fit:cover;">` : ""}
-                <div>
-                    <strong>${index + 1}. ${player.name}</strong><br>
-                    <span style="color:#86efac;font-weight:bold;">${pts} points</span><br>
-                    <span style="font-size:0.8em;color:#94a3b8;">${teamList}</span>
+                <div class="player-card-info">
+                    <strong><span class="rank-badge">${rank}</span> ${player.name}</strong><br>
+                    <span class="player-total-points">${pts} points total</span>
                 </div>
             </div>
+            ${teamRows}
         </div>`;
 
     });
@@ -254,11 +337,11 @@ function buildTable(players, points){
 
 loadData().then(data => {
 
-    const points = calcPointsFromScores(data.players, data.scores);
-    const ranked = rankPlayers(data.players, points);
+    const { playerPoints, teamPoints } = calcPoints(data.players, data.scores);
+    const ranked = rankPlayers(data.players, playerPoints);
 
-    buildPodium(ranked, points);
-    buildTable(ranked, points);
+    buildPodium(ranked, playerPoints, teamPoints);
+    buildTable(ranked, playerPoints, teamPoints);
 
 });
 
