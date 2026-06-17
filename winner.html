@@ -10,6 +10,56 @@
 
 <link rel="stylesheet" href="style.css">
 
+<style>
+
+.notice-box {
+    background: #7c3aed;
+    border-radius: 12px;
+    padding: 15px 20px;
+    margin-bottom: 20px;
+    font-size: 0.95em;
+    line-height: 1.5;
+}
+
+.notice-box strong {
+    display: block;
+    font-size: 1.1em;
+    margin-bottom: 6px;
+}
+
+.rules-box {
+    background: #1e293b;
+    border-radius: 12px;
+    padding: 15px 20px;
+    margin-bottom: 20px;
+    text-align: left;
+    font-size: 0.9em;
+    line-height: 1.7;
+}
+
+.rules-box h3 {
+    margin-bottom: 10px;
+    font-size: 1.05em;
+}
+
+.rules-box .rule-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0;
+    border-bottom: 1px solid #334155;
+}
+
+.rules-box .rule-row:last-child {
+    border-bottom: none;
+}
+
+.points-badge {
+    font-weight: bold;
+    color: #86efac;
+}
+
+</style>
+
 </head>
 
 <body>
@@ -18,11 +68,25 @@
 
 <h1>🏆 Tournament Standings</h1>
 
-<p>Live leaderboard based on team progress</p>
+<p>Live leaderboard based on match results</p>
+
+<div class="notice-box">
+    <strong>💰 £55 Prize Pot Notice</strong>
+    The £55 prize pot will go to the person whose team wins the entire tournament — regardless of points. The points tally below is just a bit of fun... but Michael might buy the winner a little prize 😉
+</div>
+
+<div class="rules-box">
+    <h3>📋 How Points Work</h3>
+    <div class="rule-row"><span>Your team wins a match</span><span class="points-badge">+3 pts</span></div>
+    <div class="rule-row"><span>Your team draws a match</span><span class="points-badge">+1 pt</span></div>
+    <div class="rule-row"><span>Your team loses a match</span><span class="points-badge">0 pts</span></div>
+    <div class="rule-row"><span>Points are tallied across all your teams</span><span>⚽</span></div>
+    <div class="rule-row"><span>Most points at the end wins the fun prize!</span><span>🎁</span></div>
+</div>
 
 <div id="podium"></div>
 
-<br><br>
+<br>
 
 <div id="fullTable"></div>
 
@@ -51,101 +115,121 @@ const firebaseApp = initializeApp(firebaseConfig);
 const db = getFirestore(firebaseApp);
 
 async function loadData(){
-
     try {
-
         const docRef = doc(db, "tournament", "data");
         const docSnap = await getDoc(docRef);
-
         if(docSnap.exists()) return docSnap.data();
-
     } catch(e) {
         console.log("Firebase unavailable, falling back to data.json");
     }
-
     const response = await fetch("data.json");
     return await response.json();
-
-}
-
-function getStatusScore(status){
-    switch(status){
-        case "🏆 Champion":      return 100;
-        case "⭐ Finalist":      return 90;
-        case "🟣 Semi Final":    return 80;
-        case "🔵 Quarter Final": return 70;
-        case "🟠 Last 16":       return 60;
-        case "🟡 Last 32":       return 50;
-        case "🟢 Active":        return 40;
-        default:                 return 0;
-    }
 }
 
 function getProfilePhoto(name){
     return localStorage.getItem(`photo-${name}`);
 }
 
-function rankPlayers(players){
-    return [...players].sort((a,b)=>{
-        const aScore = a.teams.reduce((t,team) => t + getStatusScore(team.status), 0);
-        const bScore = b.teams.reduce((t,team) => t + getStatusScore(team.status), 0);
-        return bScore - aScore;
+// ----------------------
+// Points from match results
+// ----------------------
+
+function calcPointsFromScores(players, scores){
+
+    // Build a map of teamName -> player
+    const teamToPlayer = {};
+    players.forEach(player => {
+        player.teams.forEach(team => {
+            teamToPlayer[team.name] = player.name;
+        });
     });
+
+    // Build points map: playerName -> points
+    const points = {};
+    players.forEach(p => { points[p.name] = 0; });
+
+    Object.values(scores || {}).forEach(match => {
+
+        if(match.homeScore === null || match.awayScore === null) return;
+
+        const homePlayer = teamToPlayer[match.home];
+        const awayPlayer = teamToPlayer[match.away];
+
+        if(match.result === "home"){
+            if(homePlayer) points[homePlayer] = (points[homePlayer] || 0) + 3;
+        } else if(match.result === "away"){
+            if(awayPlayer) points[awayPlayer] = (points[awayPlayer] || 0) + 3;
+        } else if(match.result === "draw"){
+            if(homePlayer) points[homePlayer] = (points[homePlayer] || 0) + 1;
+            if(awayPlayer) points[awayPlayer] = (points[awayPlayer] || 0) + 1;
+        }
+
+    });
+
+    return points;
 }
 
-function getPlayerScore(player){
-    return player.teams.reduce((total,team) => total + getStatusScore(team.status), 0);
+function rankPlayers(players, points){
+    return [...players].sort((a, b) => (points[b.name] || 0) - (points[a.name] || 0));
 }
 
 function getBestTeam(player){
-    let bestTeam = null;
-    let bestScore = -1;
-    player.teams.forEach(team=>{
-        const score = getStatusScore(team.status);
-        if(score > bestScore){ bestScore = score; bestTeam = team; }
-    });
-    return bestTeam;
+    return player.teams.length > 0 ? player.teams[0] : null;
 }
 
-loadData().then(data => {
+// ----------------------
+// Build Podium
+// ----------------------
 
-    const rankedPlayers = rankPlayers(data.players);
-    buildPodium(rankedPlayers);
-    buildTable(rankedPlayers);
-
-});
-
-function buildPodium(players){
+function buildPodium(players, points){
 
     let html = `<div class="podium">`;
 
     if(players[1]){
-        html += `<div class="place second"><h2>🥈 2nd</h2>${getPlayerCard(players[1])}</div>`;
+        html += `<div class="place second"><h2>🥈 2nd</h2>${getPlayerCard(players[1], points)}</div>`;
     }
 
     if(players[0]){
-        html += `<div class="place first"><h2>🥇 1st</h2>${getPlayerCard(players[0])}</div>`;
+        html += `<div class="place first"><h2>🥇 1st</h2>${getPlayerCard(players[0], points)}</div>`;
     }
 
     if(players[2]){
-        html += `<div class="place third"><h2>🥉 3rd</h2>${getPlayerCard(players[2])}</div>`;
+        html += `<div class="place third"><h2>🥉 3rd</h2>${getPlayerCard(players[2], points)}</div>`;
     }
 
     html += `</div>`;
 
     document.getElementById("podium").innerHTML = html;
-
 }
 
-function buildTable(players){
+function getPlayerCard(player, points){
+
+    const photo = getProfilePhoto(player.name);
+    const pts = points[player.name] || 0;
+    const bestTeam = getBestTeam(player);
+
+    return `
+        ${photo ? `<img src="${photo}" class="profile-photo">` : ""}
+        <h3>${player.name}</h3>
+        <p><strong>${pts} pts</strong></p>
+        <p>${bestTeam ? `${bestTeam.flag} ${bestTeam.name}` : ""}</p>
+    `;
+}
+
+// ----------------------
+// Build Full Table
+// ----------------------
+
+function buildTable(players, points){
 
     let html = "";
 
-    players.forEach((player,index)=>{
+    players.forEach((player, index) => {
 
         const photo = getProfilePhoto(player.name);
-        const score = getPlayerScore(player);
-        const bestTeam = getBestTeam(player);
+        const pts = points[player.name] || 0;
+
+        const teamList = player.teams.map(t => `${t.flag} ${t.name}`).join(", ");
 
         html += `
         <div class="table-row">
@@ -153,8 +237,8 @@ function buildTable(players){
                 ${photo ? `<img src="${photo}" style="width:50px;height:50px;border-radius:50%;object-fit:cover;">` : ""}
                 <div>
                     <strong>${index + 1}. ${player.name}</strong><br>
-                    Score: ${score}<br>
-                    Best Team: ${bestTeam ? `${bestTeam.flag} ${bestTeam.name}` : "None"}
+                    <span style="color:#86efac;font-weight:bold;">${pts} points</span><br>
+                    <span style="font-size:0.8em;color:#94a3b8;">${teamList}</span>
                 </div>
             </div>
         </div>`;
@@ -162,29 +246,23 @@ function buildTable(players){
     });
 
     document.getElementById("fullTable").innerHTML = html;
-
 }
 
-function getPlayerCard(player){
+// ----------------------
+// Init
+// ----------------------
 
-    const photo = getProfilePhoto(player.name);
-    const score = getPlayerScore(player);
-    const bestTeam = getBestTeam(player);
+loadData().then(data => {
 
-    return `
-        ${photo ? `<img src="${photo}" class="profile-photo">` : ""}
-        <h3>${player.name}</h3>
-        <p>Score: ${score}</p>
-        <p>${bestTeam ? `${bestTeam.flag} ${bestTeam.name}` : ""}</p>
-    `;
+    const points = calcPointsFromScores(data.players, data.scores);
+    const ranked = rankPlayers(data.players, points);
 
-}
+    buildPodium(ranked, points);
+    buildTable(ranked, points);
+
+});
 
 </script>
-
-</body>
-
-</html>
 
 </body>
 
