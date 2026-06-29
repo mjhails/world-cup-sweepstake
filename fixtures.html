@@ -103,7 +103,9 @@
 
 <div class="hero">
 
-<h1>📅 Group Stage Fixtures</h1>
+<h1>📅 Fixtures</h1>
+
+<div id="knockout"></div>
 
 <div id="fixtures">Loading fixtures...</div>
 
@@ -272,6 +274,84 @@ function matchKey(home, away, time, date){
     return `${home}_vs_${away}_${time}_${date}`;
 }
 
+// ----------------------
+// Knockout Stage Fixtures
+// ----------------------
+
+const KNOCKOUT_FIXTURES = [
+    { round:"Round of 32", date:"Sunday 28 June 2026", time:"20:00", teamA:"South Africa", teamB:"Canada", key:"R32_M73" },
+    { round:"Round of 32", date:"Monday 29 June 2026", time:"18:00", teamA:"Brazil", teamB:"Japan", key:"R32_M76" },
+    { round:"Round of 32", date:"Monday 29 June 2026", time:"21:30", teamA:"Germany", teamB:"Paraguay", key:"R32_M74" },
+    { round:"Round of 32", date:"Tuesday 30 June 2026", time:"02:00", teamA:"Netherlands", teamB:"Morocco", key:"R32_M75" },
+    { round:"Round of 32", date:"Tuesday 30 June 2026", time:"18:00", teamA:"Ivory Coast", teamB:"Norway", key:"R32_M78" },
+    { round:"Round of 32", date:"Tuesday 30 June 2026", time:"22:00", teamA:"France", teamB:"Sweden", key:"R32_M77" },
+    { round:"Round of 32", date:"Wednesday 1 July 2026", time:"02:00", teamA:"Mexico", teamB:"Ecuador", key:"R32_M79" },
+    { round:"Round of 32", date:"Wednesday 1 July 2026", time:"17:00", teamA:"England", teamB:"DR Congo", key:"R32_M80" },
+    { round:"Round of 32", date:"Wednesday 1 July 2026", time:"21:00", teamA:"Belgium", teamB:"Senegal", key:"R32_M82" },
+    { round:"Round of 32", date:"Thursday 2 July 2026", time:"01:00", teamA:"United States", teamB:"Bosnia and Herzegovina", key:"R32_M81" },
+    { round:"Round of 32", date:"Thursday 2 July 2026", time:"20:00", teamA:"Spain", teamB:"Austria", key:"R32_M84" },
+    { round:"Round of 32", date:"Friday 3 July 2026", time:"00:00", teamA:"Portugal", teamB:"Croatia", key:"R32_M83" },
+    { round:"Round of 32", date:"Friday 3 July 2026", time:"04:00", teamA:"Switzerland", teamB:"Algeria", key:"R32_M85" },
+    { round:"Round of 32", date:"Friday 3 July 2026", time:"19:00", teamA:"Australia", teamB:"Egypt", key:"R32_M88" },
+    { round:"Round of 32", date:"Friday 3 July 2026", time:"23:00", teamA:"Argentina", teamB:"Cape Verde", key:"R32_M86" },
+    { round:"Round of 32", date:"Saturday 4 July 2026", time:"02:30", teamA:"Colombia", teamB:"Ghana", key:"R32_M87" }
+];
+
+function renderKnockout(knockoutData, teamOwner){
+
+    let html = `<div class="admin-section"><h2>🏆 Knockout Stage</h2>`;
+    let currentDate = "";
+
+    KNOCKOUT_FIXTURES.forEach(match => {
+
+        if(match.date !== currentDate){
+            html += `<h3 style="margin-top:15px;font-size:1em;color:#94a3b8;">📅 ${match.date} — ${match.round}</h3>`;
+            currentDate = match.date;
+        }
+
+        const saved = knockoutData[match.key];
+        const ownerA = teamOwner[match.teamA] || "-";
+        const ownerB = teamOwner[match.teamB] || "-";
+
+        let scoreHTML = "";
+
+        if(saved && saved.scoreA !== null && saved.scoreA !== undefined){
+            const winnerLabel = saved.winner ? `🏆 ${saved.winner} Advances` : "";
+            scoreHTML = `
+                <div class="fixture-score">
+                    <div class="fixture-score-number">${saved.scoreA} - ${saved.scoreB}</div>
+                    ${winnerLabel ? `<div class="fixture-score-result">${winnerLabel}</div>` : ""}
+                </div>`;
+        } else {
+            scoreHTML = `
+                <div class="fixture-score">
+                    <div class="fixture-score-pending">vs</div>
+                </div>`;
+        }
+
+        html += `
+        <div class="fixture-card">
+            <div class="fixture-time">⏰ ${match.time} UK Time</div>
+            <div class="fixture-row">
+                <div class="fixture-team home">
+                    <div class="fixture-team-name">⚽ ${match.teamA}</div>
+                    <div class="fixture-team-owner">👤 ${ownerA}</div>
+                </div>
+                ${scoreHTML}
+                <div class="fixture-team away">
+                    <div class="fixture-team-name">⚽ ${match.teamB}</div>
+                    <div class="fixture-team-owner">👤 ${ownerB}</div>
+                </div>
+            </div>
+        </div>`;
+
+    });
+
+    html += `</div><br>`;
+
+    document.getElementById("knockout").innerHTML = html;
+}
+
 loadData().then(data => {
 
     const teamOwner = {};
@@ -282,6 +362,8 @@ loadData().then(data => {
             teamOwner[team.name] = player.name;
         });
     });
+
+    renderKnockout(data.knockout || {}, teamOwner);
 
     let html = "";
 
