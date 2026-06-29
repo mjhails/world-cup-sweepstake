@@ -81,6 +81,53 @@ margin:0;
 margin:0;
 }
 
+.knockout-row{
+background:#1e293b;
+padding:14px;
+border-radius:10px;
+margin-bottom:12px;
+}
+
+.knockout-row .ko-date{
+font-size:0.8em;
+color:#94a3b8;
+margin-bottom:8px;
+}
+
+.knockout-row .ko-teams{
+display:flex;
+align-items:center;
+gap:8px;
+flex-wrap:wrap;
+margin-bottom:8px;
+}
+
+.knockout-row select.ko-team-select{
+flex:1;
+min-width:120px;
+margin:0;
+}
+
+.knockout-row .ko-score-inputs{
+display:flex;
+align-items:center;
+gap:6px;
+flex-wrap:wrap;
+}
+
+.knockout-row input[type="number"]{
+width:55px;
+text-align:center;
+padding:6px;
+margin:0;
+}
+
+.knockout-row select.ko-winner-select{
+margin:0;
+flex:1;
+min-width:140px;
+}
+
 </style>
 
 </head>
@@ -156,6 +203,16 @@ Loading teams...
 <p>Enter scores for completed matches</p>
 
 <div id="scoresManager">Loading matches...</div>
+
+</div>
+
+<div class="admin-section">
+
+<h2>🏆 Knockout Stage</h2>
+
+<p>Select the two teams playing, then enter the score and winner</p>
+
+<div id="knockoutManager">Loading knockout fixtures...</div>
 
 </div>
 
@@ -483,6 +540,101 @@ function collectScores(){
 }
 
 // ----------------------
+// Knockout Stage Fixtures (Round of 32 - confirmed real teams)
+// ----------------------
+
+const KNOCKOUT_FIXTURES = [
+    { round:"Round of 32", date:"Sunday 28 June 2026", time:"20:00", teamA:"South Africa", teamB:"Canada", key:"R32_M73" },
+    { round:"Round of 32", date:"Monday 29 June 2026", time:"18:00", teamA:"Brazil", teamB:"Japan", key:"R32_M76" },
+    { round:"Round of 32", date:"Monday 29 June 2026", time:"21:30", teamA:"Germany", teamB:"Paraguay", key:"R32_M74" },
+    { round:"Round of 32", date:"Tuesday 30 June 2026", time:"02:00", teamA:"Netherlands", teamB:"Morocco", key:"R32_M75" },
+    { round:"Round of 32", date:"Tuesday 30 June 2026", time:"18:00", teamA:"Ivory Coast", teamB:"Norway", key:"R32_M78" },
+    { round:"Round of 32", date:"Tuesday 30 June 2026", time:"22:00", teamA:"France", teamB:"Sweden", key:"R32_M77" },
+    { round:"Round of 32", date:"Wednesday 1 July 2026", time:"02:00", teamA:"Mexico", teamB:"Ecuador", key:"R32_M79" },
+    { round:"Round of 32", date:"Wednesday 1 July 2026", time:"17:00", teamA:"England", teamB:"DR Congo", key:"R32_M80" },
+    { round:"Round of 32", date:"Wednesday 1 July 2026", time:"21:00", teamA:"Belgium", teamB:"Senegal", key:"R32_M82" },
+    { round:"Round of 32", date:"Thursday 2 July 2026", time:"01:00", teamA:"United States", teamB:"Bosnia and Herzegovina", key:"R32_M81" },
+    { round:"Round of 32", date:"Thursday 2 July 2026", time:"20:00", teamA:"Spain", teamB:"Austria", key:"R32_M84" },
+    { round:"Round of 32", date:"Friday 3 July 2026", time:"00:00", teamA:"Portugal", teamB:"Croatia", key:"R32_M83" },
+    { round:"Round of 32", date:"Friday 3 July 2026", time:"04:00", teamA:"Switzerland", teamB:"Algeria", key:"R32_M85" },
+    { round:"Round of 32", date:"Friday 3 July 2026", time:"19:00", teamA:"Australia", teamB:"Egypt", key:"R32_M88" },
+    { round:"Round of 32", date:"Friday 3 July 2026", time:"23:00", teamA:"Argentina", teamB:"Cape Verde", key:"R32_M86" },
+    { round:"Round of 32", date:"Saturday 4 July 2026", time:"02:30", teamA:"Colombia", teamB:"Ghana", key:"R32_M87" }
+];
+
+function buildKnockoutManager(data){
+
+    const knockout = data.knockout || {};
+    let html = "";
+    let currentDate = "";
+
+    KNOCKOUT_FIXTURES.forEach(match => {
+
+        if(match.date !== currentDate){
+            html += `<div style="margin:15px 0 8px;"><strong>📅 ${match.date} — ${match.round}</strong></div>`;
+            currentDate = match.date;
+        }
+
+        const saved = knockout[match.key] || {};
+
+        html += `
+        <div class="knockout-row">
+            <div class="ko-date">⏰ ${match.time} UK Time</div>
+            <div class="ko-teams">
+                <strong>${match.teamA}</strong>
+                <span>vs</span>
+                <strong>${match.teamB}</strong>
+            </div>
+            <div class="ko-score-inputs">
+                <span>${match.teamA}</span>
+                <input type="number" min="0" max="99" id="ko-scoreA-${match.key}" value="${saved.scoreA ?? ""}" placeholder="0">
+                <span>-</span>
+                <input type="number" min="0" max="99" id="ko-scoreB-${match.key}" value="${saved.scoreB ?? ""}" placeholder="0">
+                <span>${match.teamB}</span>
+            </div>
+            <div style="margin-top:8px;">
+                <select class="ko-winner-select" id="ko-winner-${match.key}">
+                    <option value="" ${!saved.winner ? "selected" : ""}>Select Winner (advances)</option>
+                    <option value="${match.teamA}" ${saved.winner === match.teamA ? "selected" : ""}>🏆 ${match.teamA} Wins</option>
+                    <option value="${match.teamB}" ${saved.winner === match.teamB ? "selected" : ""}>🏆 ${match.teamB} Wins</option>
+                </select>
+            </div>
+        </div>`;
+
+    });
+
+    document.getElementById("knockoutManager").innerHTML = html;
+}
+
+function collectKnockoutScores(){
+
+    const knockout = {};
+
+    KNOCKOUT_FIXTURES.forEach(match => {
+
+        const scoreA = document.getElementById(`ko-scoreA-${match.key}`)?.value;
+        const scoreB = document.getElementById(`ko-scoreB-${match.key}`)?.value;
+        const winner = document.getElementById(`ko-winner-${match.key}`)?.value;
+
+        if(scoreA !== "" || scoreB !== "" || winner !== ""){
+            knockout[match.key] = {
+                round: match.round,
+                date: match.date,
+                time: match.time,
+                teamA: match.teamA,
+                teamB: match.teamB,
+                scoreA: scoreA !== "" ? parseInt(scoreA) : null,
+                scoreB: scoreB !== "" ? parseInt(scoreB) : null,
+                winner: winner || null
+            };
+        }
+
+    });
+
+    return knockout;
+}
+
+// ----------------------
 // Page Init
 // ----------------------
 
@@ -493,6 +645,7 @@ loadData().then(data => {
 
     buildStatusManager(data);
     buildScoresManager(data);
+    buildKnockoutManager(data);
 
     if(data.drawLocked){
         const button = document.getElementById("drawButton");
@@ -648,6 +801,7 @@ window.saveTournament = async function(){
     });
 
     tournamentData.scores = collectScores();
+    tournamentData.knockout = collectKnockoutScores();
 
     await saveToFirebase();
     showSaveStatus("✅ Saved! All users will see updates instantly.");
