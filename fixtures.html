@@ -294,24 +294,50 @@ const KNOCKOUT_FIXTURES = [
     { round:"Round of 32", date:"Friday 3 July 2026", time:"04:00", teamA:"Switzerland", teamB:"Algeria", key:"R32_M85" },
     { round:"Round of 32", date:"Friday 3 July 2026", time:"19:00", teamA:"Australia", teamB:"Egypt", key:"R32_M88" },
     { round:"Round of 32", date:"Friday 3 July 2026", time:"23:00", teamA:"Argentina", teamB:"Cape Verde", key:"R32_M86" },
-    { round:"Round of 32", date:"Saturday 4 July 2026", time:"02:30", teamA:"Colombia", teamB:"Ghana", key:"R32_M87" }
+    { round:"Round of 32", date:"Saturday 4 July 2026", time:"02:30", teamA:"Colombia", teamB:"Ghana", key:"R32_M87" },
+
+    { round:"Round of 16", date:"Saturday 4 July 2026", time:"18:00", teamA:"Winner R32_M73", teamB:"Winner R32_M75", key:"R16_M90" },
+    { round:"Round of 16", date:"Saturday 4 July 2026", time:"22:00", teamA:"Winner R32_M74", teamB:"Winner R32_M77", key:"R16_M89" },
+    { round:"Round of 16", date:"Sunday 5 July 2026", time:"21:00", teamA:"Winner R32_M76", teamB:"Winner R32_M78", key:"R16_M91" },
+    { round:"Round of 16", date:"Monday 6 July 2026", time:"01:00", teamA:"Winner R32_M79", teamB:"Winner R32_M80", key:"R16_M92" },
+    { round:"Round of 16", date:"Monday 6 July 2026", time:"20:00", teamA:"Winner R32_M83", teamB:"Winner R32_M84", key:"R16_M93" },
+    { round:"Round of 16", date:"Tuesday 7 July 2026", time:"01:00", teamA:"Winner R32_M81", teamB:"Winner R32_M82", key:"R16_M94" },
+    { round:"Round of 16", date:"Tuesday 7 July 2026", time:"17:00", teamA:"Winner R32_M86", teamB:"Winner R32_M88", key:"R16_M95" },
+    { round:"Round of 16", date:"Tuesday 7 July 2026", time:"21:00", teamA:"Winner R32_M85", teamB:"Winner R32_M87", key:"R16_M96" },
+
+    { round:"Quarter-Final", date:"Thursday 9 July 2026", time:"21:00", teamA:"Winner R16_M89", teamB:"Winner R16_M90", key:"QF_M97" },
+    { round:"Quarter-Final", date:"Friday 10 July 2026", time:"20:00", teamA:"Winner R16_M93", teamB:"Winner R16_M94", key:"QF_M98" },
+    { round:"Quarter-Final", date:"Saturday 11 July 2026", time:"22:00", teamA:"Winner R16_M91", teamB:"Winner R16_M92", key:"QF_M99" },
+    { round:"Quarter-Final", date:"Sunday 12 July 2026", time:"02:00", teamA:"Winner R16_M95", teamB:"Winner R16_M96", key:"QF_M100" },
+
+    { round:"Semi-Final", date:"Tuesday 14 July 2026", time:"20:00", teamA:"Winner QF_M97", teamB:"Winner QF_M98", key:"SF_M101" },
+    { round:"Semi-Final", date:"Wednesday 15 July 2026", time:"20:00", teamA:"Winner QF_M99", teamB:"Winner QF_M100", key:"SF_M102" },
+
+    { round:"Third Place Playoff", date:"Saturday 18 July 2026", time:"22:00", teamA:"Loser SF_M101", teamB:"Loser SF_M102", key:"P3_M103" },
+
+    { round:"Final", date:"Sunday 19 July 2026", time:"20:00", teamA:"Winner SF_M101", teamB:"Winner SF_M102", key:"FINAL_M104" }
 ];
 
 function renderKnockout(knockoutData, teamOwner){
 
     let html = `<div class="admin-section"><h2>🏆 Knockout Stage</h2>`;
-    let currentDate = "";
+    let currentRound = "";
 
     KNOCKOUT_FIXTURES.forEach(match => {
 
-        if(match.date !== currentDate){
-            html += `<h3 style="margin-top:15px;font-size:1em;color:#94a3b8;">📅 ${match.date} — ${match.round}</h3>`;
-            currentDate = match.date;
+        if(match.round !== currentRound){
+            html += `<h3 style="margin-top:15px;font-size:1.05em;color:#e2e8f0;">🏆 ${match.round}</h3>`;
+            currentRound = match.round;
         }
 
         const saved = knockoutData[match.key];
-        const ownerA = teamOwner[match.teamA] || "-";
-        const ownerB = teamOwner[match.teamB] || "-";
+
+        // Use confirmed team names if available, otherwise show the placeholder label
+        const displayA = (saved && saved.teamA) ? saved.teamA : match.teamA;
+        const displayB = (saved && saved.teamB) ? saved.teamB : match.teamB;
+
+        const ownerA = teamOwner[displayA] || "-";
+        const ownerB = teamOwner[displayB] || "-";
 
         let scoreHTML = "";
 
@@ -331,15 +357,15 @@ function renderKnockout(knockoutData, teamOwner){
 
         html += `
         <div class="fixture-card">
-            <div class="fixture-time">⏰ ${match.time} UK Time</div>
+            <div class="fixture-time">📅 ${match.date} — ⏰ ${match.time} UK Time</div>
             <div class="fixture-row">
                 <div class="fixture-team home">
-                    <div class="fixture-team-name">⚽ ${match.teamA}</div>
+                    <div class="fixture-team-name">⚽ ${displayA}</div>
                     <div class="fixture-team-owner">👤 ${ownerA}</div>
                 </div>
                 ${scoreHTML}
                 <div class="fixture-team away">
-                    <div class="fixture-team-name">⚽ ${match.teamB}</div>
+                    <div class="fixture-team-name">⚽ ${displayB}</div>
                     <div class="fixture-team-owner">👤 ${ownerB}</div>
                 </div>
             </div>
