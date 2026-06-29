@@ -6,126 +6,111 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Admin Dashboard</title>
+<title>Tournament Standings</title>
 
 <link rel="stylesheet" href="style.css">
 
 <style>
 
-.status-row{
-display:flex;
-justify-content:space-between;
-align-items:center;
-gap:10px;
-margin-bottom:10px;
-background:#1e293b;
-padding:10px;
-border-radius:10px;
+.notice-box {
+    background: #7c3aed;
+    border-radius: 12px;
+    padding: 15px 20px;
+    margin-bottom: 20px;
+    font-size: 0.95em;
+    line-height: 1.5;
 }
 
-.status-row select{
-max-width:220px;
-margin:0;
+.notice-box strong {
+    display: block;
+    font-size: 1.1em;
+    margin-bottom: 6px;
 }
 
-.player-result{
-background:#1e293b;
-padding:15px;
-margin-bottom:15px;
-border-radius:12px;
+.rules-box {
+    background: #1e293b;
+    border-radius: 12px;
+    padding: 15px 20px;
+    margin-bottom: 20px;
+    text-align: left;
+    font-size: 0.9em;
+    line-height: 1.7;
 }
 
-#drawButton:disabled{
-opacity:.6;
-cursor:not-allowed;
+.rules-box h3 {
+    margin-bottom: 10px;
+    font-size: 1.05em;
 }
 
-#saveStatus{
-display:inline-block;
-margin-left:10px;
-font-size:0.9em;
-color:#86efac;
+.rules-box .rule-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0;
+    border-bottom: 1px solid #334155;
 }
 
-.score-row{
-display:flex;
-justify-content:space-between;
-align-items:center;
-gap:8px;
-margin-bottom:10px;
-background:#1e293b;
-padding:10px;
-border-radius:10px;
-flex-wrap:wrap;
+.rules-box .rule-row:last-child {
+    border-bottom: none;
 }
 
-.score-row .teams{
-flex:1;
-font-size:0.95em;
+.points-badge {
+    font-weight: bold;
+    color: #86efac;
 }
 
-.score-row .score-inputs{
-display:flex;
-align-items:center;
-gap:6px;
+.player-card {
+    background: #1e293b;
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 12px;
+    text-align: left;
 }
 
-.score-row input[type="number"]{
-width:55px;
-text-align:center;
-padding:6px;
-margin:0;
+.player-card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
 }
 
-.score-row select{
-margin:0;
+.player-card-info {
+    flex: 1;
 }
 
-.knockout-row{
-background:#1e293b;
-padding:14px;
-border-radius:10px;
-margin-bottom:12px;
+.player-card-info strong {
+    font-size: 1.1em;
 }
 
-.knockout-row .ko-date{
-font-size:0.8em;
-color:#94a3b8;
-margin-bottom:8px;
+.player-total-points {
+    font-size: 1.3em;
+    font-weight: bold;
+    color: #86efac;
 }
 
-.knockout-row .ko-teams{
-display:flex;
-align-items:center;
-gap:8px;
-flex-wrap:wrap;
-margin-bottom:8px;
+.team-points-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 8px;
+    border-radius: 8px;
+    background: #0f172a;
+    margin-bottom: 6px;
+    font-size: 0.88em;
 }
 
-.knockout-row select.ko-team-select{
-flex:1;
-min-width:120px;
-margin:0;
+.team-points-row:last-child {
+    margin-bottom: 0;
 }
 
-.knockout-row .ko-score-inputs{
-display:flex;
-align-items:center;
-gap:6px;
-flex-wrap:wrap;
+.team-pts-value {
+    font-weight: bold;
+    color: #86efac;
+    white-space: nowrap;
 }
 
-.knockout-row input[type="number"]{
-width:55px;
-text-align:center;
-padding:6px;
-margin:0;
-}
-
-.knockout-row select.ko-winner-select{
-margin:0;
-flex:1;
-min-width:140px;
+.rank-badge {
+    font-size: 1.4em;
+    margin-right: 4px;
 }
 
 </style>
@@ -136,106 +121,30 @@ min-width:140px;
 
 <div class="hero">
 
-<h1>🔒 Admin Dashboard</h1>
+<h1>🏆 Tournament Standings</h1>
 
-<p>Tournament Director Controls</p>
+<p>Live leaderboard based on match results</p>
 
-<div class="admin-section">
-
-<h2>👨‍👩‍👧‍👦 Participants</h2>
-
-<p>Enter one participant per line</p>
-
-<textarea
-id="participants"
-rows="10"
-placeholder="Mike&#10;Sarah&#10;Tom">
-</textarea>
-
-<button
-id="drawButton"
-onclick="generateTournamentDraw()">
-🎲 Generate Draw
-</button>
-
+<div class="notice-box">
+    <strong>💰 £55 Prize Pot Notice</strong>
+    The £55 prize pot will go to the person whose team wins the entire tournament — regardless of points. The points tally below is just a bit of fun... but Mike might buy the winner a little prize 😉
 </div>
 
-<div class="admin-section">
-
-<h2>📢 Tournament Message</h2>
-
-<textarea
-id="tournamentMessage"
-rows="4"
-placeholder="Tournament update...">
-</textarea>
-
-<button onclick="saveMessage()">
-💾 Save Message
-</button>
-
+<div class="rules-box">
+    <h3>📋 How Points Work</h3>
+    <div class="rule-row"><span>Your team wins a group match</span><span class="points-badge">+3 pts</span></div>
+    <div class="rule-row"><span>Your team draws a group match</span><span class="points-badge">+1 pt</span></div>
+    <div class="rule-row"><span>Your team loses a group match</span><span class="points-badge">0 pts</span></div>
+    <div class="rule-row"><span>Your team wins a knockout match</span><span class="points-badge">+3 pts</span></div>
+    <div class="rule-row"><span>Points tallied across all your teams</span><span>⚽</span></div>
+    <div class="rule-row"><span>Most points at the end wins the fun prize!</span><span>🎁</span></div>
 </div>
 
-<div class="admin-section">
+<div id="podium"></div>
 
-<h2>🏆 Generated Draw</h2>
+<br>
 
-<div id="drawOutput">
-No draw generated yet.
-</div>
-
-</div>
-
-<div class="admin-section">
-
-<h2>⚽ Team Status Manager</h2>
-
-<div id="statusManager">
-Loading teams...
-</div>
-
-</div>
-
-<div class="admin-section">
-
-<h2>🥅 Match Scores</h2>
-
-<p>Enter scores for completed matches</p>
-
-<div id="scoresManager">Loading matches...</div>
-
-</div>
-
-<div class="admin-section">
-
-<h2>🏆 Knockout Stage</h2>
-
-<p>Round of 32 teams are confirmed. For later rounds, select each team from the dropdown once known, then enter the score and winner.</p>
-
-<div id="knockoutManager">Loading knockout fixtures...</div>
-
-</div>
-
-<div class="admin-section">
-
-<h2>💾 Tournament Controls</h2>
-
-<button onclick="saveTournament()">
-💾 Save Tournament
-</button>
-<span id="saveStatus"></span>
-
-<br><br>
-
-<button onclick="unlockDraw()">
-🔓 Unlock Draw
-</button>
-
-<button onclick="downloadDataFile()">
-📥 Download data.json
-</button>
-
-</div>
+<div id="fullTable"></div>
 
 <br>
 
@@ -246,7 +155,7 @@ Loading teams...
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBmVb4vdoCJQg5uFC-yGogjKZzIsdhWZRY",
@@ -261,680 +170,197 @@ const firebaseConfig = {
 const firebaseApp = initializeApp(firebaseConfig);
 const db = getFirestore(firebaseApp);
 
-let tournamentData = null;
-
-// ----------------------
-// Load Data
-// ----------------------
-
-async function loadData() {
-
+async function loadData(){
     try {
         const docRef = doc(db, "tournament", "data");
         const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-            tournamentData = docSnap.data();
-            return tournamentData;
-        }
-    } catch (error) {
-        console.log("Firebase unavailable, falling back to data.json", error);
+        if(docSnap.exists()) return docSnap.data();
+    } catch(e) {
+        console.log("Firebase unavailable, falling back to data.json");
     }
-
     const response = await fetch("data.json");
-    tournamentData = await response.json();
-    return tournamentData;
+    return await response.json();
+}
+
+function getProfilePhoto(name){
+    return localStorage.getItem(`photo-${name}`);
 }
 
 // ----------------------
-// Save to Firebase
+// Hardcoded past results (same as fixtures.html)
 // ----------------------
 
-async function saveToFirebase() {
-    if (!tournamentData) return;
-    const docRef = doc(db, "tournament", "data");
-    await setDoc(docRef, tournamentData);
-}
+const hardcodedScores = {
+    "Mexico_vs_South Africa_20:00_11Jun":              { home:"Mexico",         away:"South Africa",           homeScore:2, awayScore:0, result:"home" },
+    "South Korea_vs_Czechia_23:00_11Jun":              { home:"South Korea",    away:"Czechia",                homeScore:2, awayScore:1, result:"home" },
+    "Canada_vs_Bosnia and Herzegovina_20:00_12Jun":    { home:"Canada",         away:"Bosnia and Herzegovina", homeScore:1, awayScore:1, result:"draw" },
+    "United States_vs_Paraguay_02:00_13Jun":           { home:"United States",  away:"Paraguay",               homeScore:4, awayScore:1, result:"home" },
+    "Qatar_vs_Switzerland_20:00_13Jun":                { home:"Qatar",          away:"Switzerland",            homeScore:1, awayScore:1, result:"draw" },
+    "Brazil_vs_Morocco_23:00_13Jun":                   { home:"Brazil",         away:"Morocco",                homeScore:1, awayScore:1, result:"draw" },
+    "Haiti_vs_Scotland_02:00_14Jun":                   { home:"Haiti",          away:"Scotland",               homeScore:0, awayScore:1, result:"away" },
+    "Australia_vs_Türkiye_05:00_14Jun":                { home:"Australia",      away:"Türkiye",                homeScore:2, awayScore:0, result:"home" },
+    "Germany_vs_Curaçao_18:00_14Jun":                  { home:"Germany",        away:"Curaçao",                homeScore:7, awayScore:1, result:"home" },
+    "Netherlands_vs_Japan_21:00_14Jun":                { home:"Netherlands",    away:"Japan",                  homeScore:2, awayScore:2, result:"draw" },
+    "Ivory Coast_vs_Ecuador_00:00_15Jun":              { home:"Ivory Coast",    away:"Ecuador",                homeScore:1, awayScore:0, result:"home" },
+    "Sweden_vs_Tunisia_03:00_15Jun":                   { home:"Sweden",         away:"Tunisia",                homeScore:5, awayScore:1, result:"home" },
+    "Spain_vs_Cape Verde_17:00_15Jun":                 { home:"Spain",          away:"Cape Verde",             homeScore:0, awayScore:0, result:"draw" },
+    "Belgium_vs_Egypt_20:00_15Jun":                    { home:"Belgium",        away:"Egypt",                  homeScore:1, awayScore:1, result:"draw" },
+    "Saudi Arabia_vs_Uruguay_23:00_15Jun":             { home:"Saudi Arabia",   away:"Uruguay",                homeScore:1, awayScore:1, result:"draw" },
+    "Iran_vs_New Zealand_02:00_16Jun":                 { home:"Iran",           away:"New Zealand",            homeScore:2, awayScore:2, result:"draw" },
+    "Colombia_vs_Portugal_00:30_28Jun":                { home:"Colombia",       away:"Portugal",               homeScore:0, awayScore:0, result:"draw" },
+    "DR Congo_vs_Uzbekistan_00:30_28Jun":              { home:"DR Congo",       away:"Uzbekistan",             homeScore:3, awayScore:1, result:"home" },
+    "Algeria_vs_Austria_03:00_28Jun":                  { home:"Algeria",        away:"Austria",                homeScore:3, awayScore:3, result:"draw" },
+    "Jordan_vs_Argentina_03:00_28Jun":                 { home:"Jordan",         away:"Argentina",              homeScore:1, awayScore:3, result:"away" },
+};
 
 // ----------------------
-// Helper functions
+// Calculate points per player AND per team
 // ----------------------
 
-function getStatusScore(status) {
-    switch(status){
-        case "🏆 Champion":      return 100;
-        case "⭐ Finalist":      return 90;
-        case "🟣 Semi Final":    return 80;
-        case "🔵 Quarter Final": return 70;
-        case "🟠 Last 16":       return 60;
-        case "🟡 Last 32":       return 50;
-        case "🟢 Active":        return 40;
-        default:                 return 0;
-    }
-}
+function calcPoints(players, firebaseScores, knockoutData){
 
-function shuffle(array){
-    for(let i=array.length-1; i>0; i--){
-        const j = Math.floor(Math.random() * (i+1));
-        [array[i],array[j]] = [array[j],array[i]];
-    }
-    return array;
-}
+    // Merge hardcoded + firebase scores (firebase takes priority for same key)
+    const allScores = { ...hardcodedScores, ...(firebaseScores || {}) };
 
-function generateDraw(players, teams){
-    players.forEach(player=>{ player.teams = []; });
-    const pot1 = ["Argentina","France","Brazil","Spain","England","Portugal","Germany","Netherlands","Belgium","Croatia","Uruguay","Morocco"];
-    const pot2 = ["United States","Mexico","Japan","Switzerland","Colombia","Senegal","South Korea","Ecuador","Norway","Sweden","Paraguay","Türkiye"];
-    const pot3 = ["Canada","Austria","Ghana","Egypt","Algeria","Tunisia","Ivory Coast","Panama","Scotland","Australia","Qatar","Saudi Arabia"];
-    const pot4 = ["Bosnia and Herzegovina","Cape Verde","Curaçao","Czechia","DR Congo","Haiti","Iran","Iraq","Jordan","New Zealand","South Africa","Uzbekistan"];
-    const pots = [pot1, pot2, pot3, pot4];
-    pots.forEach(pot=>{
-        const potTeams = shuffle(teams.filter(team => pot.includes(team.name)));
-        for(let i=0; i<players.length; i++){
-            if(i < potTeams.length) players[i].teams.push(potTeams[i]);
-        }
-        const leftovers = potTeams.slice(players.length);
-        leftovers.forEach(team=>{
-            const randomPlayer = players[Math.floor(Math.random() * players.length)];
-            randomPlayer.teams.push(team);
+    // Build teamName -> playerName map
+    const teamToPlayer = {};
+    players.forEach(player => {
+        player.teams.forEach(team => {
+            teamToPlayer[team.name] = player.name;
         });
     });
-    return players;
+
+    // player points total
+    const playerPoints = {};
+    players.forEach(p => { playerPoints[p.name] = 0; });
+
+    // team points: teamName -> points
+    const teamPoints = {};
+
+    Object.values(allScores).forEach(match => {
+
+        if(match.result === null || match.result === undefined || match.result === "") return;
+
+        const homePlayer = teamToPlayer[match.home];
+        const awayPlayer = teamToPlayer[match.away];
+
+        if(match.result === "home"){
+            if(homePlayer) playerPoints[homePlayer] = (playerPoints[homePlayer] || 0) + 3;
+            teamPoints[match.home] = (teamPoints[match.home] || 0) + 3;
+        } else if(match.result === "away"){
+            if(awayPlayer) playerPoints[awayPlayer] = (playerPoints[awayPlayer] || 0) + 3;
+            teamPoints[match.away] = (teamPoints[match.away] || 0) + 3;
+        } else if(match.result === "draw"){
+            if(homePlayer) playerPoints[homePlayer] = (playerPoints[homePlayer] || 0) + 1;
+            if(awayPlayer) playerPoints[awayPlayer] = (playerPoints[awayPlayer] || 0) + 1;
+            teamPoints[match.home] = (teamPoints[match.home] || 0) + 1;
+            teamPoints[match.away] = (teamPoints[match.away] || 0) + 1;
+        }
+
+    });
+
+    // Knockout stage: winner gets 3 points (win-or-go-home, no draws)
+    Object.values(knockoutData || {}).forEach(match => {
+
+        if(!match.winner) return;
+
+        const winnerPlayer = teamToPlayer[match.winner];
+
+        if(winnerPlayer) playerPoints[winnerPlayer] = (playerPoints[winnerPlayer] || 0) + 3;
+        teamPoints[match.winner] = (teamPoints[match.winner] || 0) + 3;
+
+    });
+
+    return { playerPoints, teamPoints };
+}
+
+function rankPlayers(players, playerPoints){
+    return [...players].sort((a, b) => (playerPoints[b.name] || 0) - (playerPoints[a.name] || 0));
 }
 
 // ----------------------
-// Fixtures — must match fixtures.html exactly (including date)
+// Build Podium
 // ----------------------
 
-const ALL_FIXTURES = [
-    {date:"Thursday 11 June 2026",matches:[
-        ["Mexico","South Africa","20:00","11Jun"],
-        ["South Korea","Czechia","23:00","11Jun"]
-    ]},
-    {date:"Friday 12 June 2026",matches:[
-        ["Canada","Bosnia and Herzegovina","20:00","12Jun"],
-        ["United States","Paraguay","02:00","13Jun"]
-    ]},
-    {date:"Saturday 13 June 2026",matches:[
-        ["Qatar","Switzerland","20:00","13Jun"],
-        ["Brazil","Morocco","23:00","13Jun"]
-    ]},
-    {date:"Sunday 14 June 2026",matches:[
-        ["Haiti","Scotland","02:00","14Jun"],
-        ["Australia","Türkiye","05:00","14Jun"],
-        ["Germany","Curaçao","18:00","14Jun"],
-        ["Netherlands","Japan","21:00","14Jun"]
-    ]},
-    {date:"Monday 15 June 2026",matches:[
-        ["Ivory Coast","Ecuador","00:00","15Jun"],
-        ["Sweden","Tunisia","03:00","15Jun"],
-        ["Spain","Cape Verde","17:00","15Jun"],
-        ["Belgium","Egypt","20:00","15Jun"],
-        ["Saudi Arabia","Uruguay","23:00","15Jun"]
-    ]},
-    {date:"Tuesday 16 June 2026",matches:[
-        ["Iran","New Zealand","02:00","16Jun"],
-        ["France","Senegal","20:00","16Jun"],
-        ["Iraq","Norway","23:00","16Jun"]
-    ]},
-    {date:"Wednesday 17 June 2026",matches:[
-        ["Argentina","Algeria","02:00","17Jun"],
-        ["Austria","Jordan","05:00","17Jun"],
-        ["Portugal","DR Congo","18:00","17Jun"],
-        ["England","Croatia","21:00","17Jun"]
-    ]},
-    {date:"Thursday 18 June 2026",matches:[
-        ["Ghana","Panama","00:00","18Jun"],
-        ["Uzbekistan","Colombia","03:00","18Jun"],
-        ["Czechia","South Africa","17:00","18Jun"],
-        ["Switzerland","Bosnia and Herzegovina","20:00","18Jun"],
-        ["Canada","Qatar","23:00","18Jun"]
-    ]},
-    {date:"Friday 19 June 2026",matches:[
-        ["Mexico","South Korea","02:00","19Jun"],
-        ["United States","Australia","20:00","19Jun"],
-        ["Scotland","Morocco","23:00","19Jun"]
-    ]},
-    {date:"Saturday 20 June 2026",matches:[
-        ["Brazil","Haiti","01:30","20Jun"],
-        ["Türkiye","Paraguay","04:00","20Jun"],
-        ["Netherlands","Sweden","18:00","20Jun"],
-        ["Germany","Ivory Coast","21:00","20Jun"]
-    ]},
-    {date:"Sunday 21 June 2026",matches:[
-        ["Ecuador","Curaçao","01:00","21Jun"],
-        ["Tunisia","Japan","05:00","21Jun"],
-        ["Spain","Saudi Arabia","17:00","21Jun"],
-        ["Belgium","Iran","20:00","21Jun"],
-        ["Uruguay","Cape Verde","23:00","21Jun"]
-    ]},
-    {date:"Monday 22 June 2026",matches:[
-        ["New Zealand","Egypt","02:00","22Jun"],
-        ["Argentina","Austria","18:00","22Jun"],
-        ["France","Iraq","22:00","22Jun"]
-    ]},
-    {date:"Tuesday 23 June 2026",matches:[
-        ["Norway","Senegal","01:00","23Jun"],
-        ["Jordan","Algeria","04:00","23Jun"],
-        ["Portugal","Uzbekistan","18:00","23Jun"],
-        ["England","Ghana","21:00","23Jun"]
-    ]},
-    {date:"Wednesday 24 June 2026",matches:[
-        ["Panama","Croatia","00:00","24Jun"],
-        ["Colombia","DR Congo","03:00","24Jun"],
-        ["Switzerland","Canada","20:00","24Jun"],
-        ["Bosnia and Herzegovina","Qatar","20:00","24Jun"],
-        ["Scotland","Brazil","23:00","24Jun"],
-        ["Morocco","Haiti","23:00","24Jun"]
-    ]},
-    {date:"Thursday 25 June 2026",matches:[
-        ["Czechia","Mexico","02:00","25Jun"],
-        ["South Africa","South Korea","02:00","25Jun"],
-        ["Ecuador","Germany","21:00","25Jun"],
-        ["Curaçao","Ivory Coast","21:00","25Jun"]
-    ]},
-    {date:"Friday 26 June 2026",matches:[
-        ["Tunisia","Netherlands","00:00","26Jun"],
-        ["Japan","Sweden","00:00","26Jun"],
-        ["Türkiye","United States","03:00","26Jun"],
-        ["Paraguay","Australia","03:00","26Jun"],
-        ["Norway","France","20:00","26Jun"],
-        ["Senegal","Iraq","20:00","26Jun"]
-    ]},
-    {date:"Saturday 27 June 2026",matches:[
-        ["Uruguay","Spain","01:00","27Jun"],
-        ["Cape Verde","Saudi Arabia","01:00","27Jun"],
-        ["New Zealand","Belgium","04:00","27Jun"],
-        ["Egypt","Iran","04:00","27Jun"],
-        ["Panama","England","22:00","27Jun"],
-        ["Croatia","Ghana","22:00","27Jun"]
-    ]},
-    {date:"Sunday 28 June 2026",matches:[
-        ["Colombia","Portugal","00:30","28Jun"],
-        ["DR Congo","Uzbekistan","00:30","28Jun"],
-        ["Algeria","Austria","03:00","28Jun"],
-        ["Jordan","Argentina","03:00","28Jun"]
-    ]}
-];
+function buildPodium(players, playerPoints, teamPoints){
 
-// ----------------------
-// Match key — must match fixtures.html exactly
-// ----------------------
+    let html = `<div class="podium">`;
 
-function matchKey(home, away, time, date){
-    return `${home}_vs_${away}_${time}_${date}`;
+    if(players[1]) html += `<div class="place second"><h2>🥈 2nd</h2>${getPlayerCard(players[1], playerPoints, teamPoints)}</div>`;
+    if(players[0]) html += `<div class="place first"><h2>🥇 1st</h2>${getPlayerCard(players[0], playerPoints, teamPoints)}</div>`;
+    if(players[2]) html += `<div class="place third"><h2>🥉 3rd</h2>${getPlayerCard(players[2], playerPoints, teamPoints)}</div>`;
+
+    html += `</div>`;
+    document.getElementById("podium").innerHTML = html;
+}
+
+function getPlayerCard(player, playerPoints, teamPoints){
+    const photo = getProfilePhoto(player.name);
+    const pts = playerPoints[player.name] || 0;
+    const bestTeam = player.teams[0];
+    return `
+        ${photo ? `<img src="${photo}" class="profile-photo">` : ""}
+        <h3>${player.name}</h3>
+        <p><strong>${pts} pts</strong></p>
+        <p>${bestTeam ? `${bestTeam.flag} ${bestTeam.name}` : ""}</p>
+    `;
 }
 
 // ----------------------
-// Build Scores Manager
+// Build Full Table
 // ----------------------
 
-function buildScoresManager(data){
+function buildTable(players, playerPoints, teamPoints){
 
-    const scores = data.scores || {};
+    const rankEmoji = ["🥇","🥈","🥉"];
     let html = "";
 
-    ALL_FIXTURES.forEach(day => {
+    players.forEach((player, index) => {
 
-        html += `<div style="margin-bottom:15px;"><strong>📅 ${day.date}</strong></div>`;
+        const photo = getProfilePhoto(player.name);
+        const pts = playerPoints[player.name] || 0;
+        const rank = rankEmoji[index] || `${index + 1}.`;
 
-        day.matches.forEach(match => {
-
-            const home = match[0];
-            const away = match[1];
-            const time = match[2];
-            const date = match[3];
-            const key  = matchKey(home, away, time, date);
-            const saved = scores[key] || {};
-
-            html += `
-            <div class="score-row">
-                <div class="teams">${home} vs ${away} <small>(${time})</small></div>
-                <div class="score-inputs">
-                    <input type="number" min="0" max="99" id="score-home-${key}" value="${saved.homeScore ?? ""}" placeholder="0">
-                    <span>-</span>
-                    <input type="number" min="0" max="99" id="score-away-${key}" value="${saved.awayScore ?? ""}" placeholder="0">
-                    <select id="score-result-${key}">
-                        <option value="" ${!saved.result ? "selected" : ""}>Result</option>
-                        <option value="home" ${saved.result === "home" ? "selected" : ""}>${home} Win</option>
-                        <option value="draw" ${saved.result === "draw" ? "selected" : ""}>Draw</option>
-                        <option value="away" ${saved.result === "away" ? "selected" : ""}>${away} Win</option>
-                    </select>
-                </div>
+        // Build team breakdown rows
+        const teamRows = player.teams.map(team => {
+            const tPts = teamPoints[team.name] || 0;
+            return `
+            <div class="team-points-row">
+                <span>${team.flag} ${team.name}</span>
+                <span class="team-pts-value">${tPts} pt${tPts !== 1 ? "s" : ""}</span>
             </div>`;
-
-        });
-
-    });
-
-    document.getElementById("scoresManager").innerHTML = html;
-}
-
-// ----------------------
-// Collect Scores
-// ----------------------
-
-function collectScores(){
-
-    const scores = {};
-
-    ALL_FIXTURES.forEach(day => {
-        day.matches.forEach(match => {
-
-            const home = match[0];
-            const away = match[1];
-            const time = match[2];
-            const date = match[3];
-            const key  = matchKey(home, away, time, date);
-
-            const homeScore = document.getElementById(`score-home-${key}`)?.value;
-            const awayScore = document.getElementById(`score-away-${key}`)?.value;
-            const result    = document.getElementById(`score-result-${key}`)?.value;
-
-            if(homeScore !== "" || awayScore !== "" || result !== ""){
-                scores[key] = {
-                    home, away, time, date,
-                    homeScore: homeScore !== "" ? parseInt(homeScore) : null,
-                    awayScore: awayScore !== "" ? parseInt(awayScore) : null,
-                    result: result || null
-                };
-            }
-
-        });
-    });
-
-    return scores;
-}
-
-// ----------------------
-// Knockout Stage Fixtures (Round of 32 - confirmed real teams)
-// ----------------------
-
-const KNOCKOUT_FIXTURES = [
-    { round:"Round of 32", date:"Sunday 28 June 2026", time:"20:00", teamA:"South Africa", teamB:"Canada", key:"R32_M73" },
-    { round:"Round of 32", date:"Monday 29 June 2026", time:"18:00", teamA:"Brazil", teamB:"Japan", key:"R32_M76" },
-    { round:"Round of 32", date:"Monday 29 June 2026", time:"21:30", teamA:"Germany", teamB:"Paraguay", key:"R32_M74" },
-    { round:"Round of 32", date:"Tuesday 30 June 2026", time:"02:00", teamA:"Netherlands", teamB:"Morocco", key:"R32_M75" },
-    { round:"Round of 32", date:"Tuesday 30 June 2026", time:"18:00", teamA:"Ivory Coast", teamB:"Norway", key:"R32_M78" },
-    { round:"Round of 32", date:"Tuesday 30 June 2026", time:"22:00", teamA:"France", teamB:"Sweden", key:"R32_M77" },
-    { round:"Round of 32", date:"Wednesday 1 July 2026", time:"02:00", teamA:"Mexico", teamB:"Ecuador", key:"R32_M79" },
-    { round:"Round of 32", date:"Wednesday 1 July 2026", time:"17:00", teamA:"England", teamB:"DR Congo", key:"R32_M80" },
-    { round:"Round of 32", date:"Wednesday 1 July 2026", time:"21:00", teamA:"Belgium", teamB:"Senegal", key:"R32_M82" },
-    { round:"Round of 32", date:"Thursday 2 July 2026", time:"01:00", teamA:"United States", teamB:"Bosnia and Herzegovina", key:"R32_M81" },
-    { round:"Round of 32", date:"Thursday 2 July 2026", time:"20:00", teamA:"Spain", teamB:"Austria", key:"R32_M84" },
-    { round:"Round of 32", date:"Friday 3 July 2026", time:"00:00", teamA:"Portugal", teamB:"Croatia", key:"R32_M83" },
-    { round:"Round of 32", date:"Friday 3 July 2026", time:"04:00", teamA:"Switzerland", teamB:"Algeria", key:"R32_M85" },
-    { round:"Round of 32", date:"Friday 3 July 2026", time:"19:00", teamA:"Australia", teamB:"Egypt", key:"R32_M88" },
-    { round:"Round of 32", date:"Friday 3 July 2026", time:"23:00", teamA:"Argentina", teamB:"Cape Verde", key:"R32_M86" },
-    { round:"Round of 32", date:"Saturday 4 July 2026", time:"02:30", teamA:"Colombia", teamB:"Ghana", key:"R32_M87" },
-
-    // Round of 16 — teams TBC until Round of 32 completes
-    { round:"Round of 16", date:"Saturday 4 July 2026", time:"18:00", teamA:"Winner R32_M73", teamB:"Winner R32_M75", key:"R16_M90",
-      optionsA:["South Africa","Canada"], optionsB:["Netherlands","Morocco"] },
-    { round:"Round of 16", date:"Saturday 4 July 2026", time:"22:00", teamA:"Winner R32_M74", teamB:"Winner R32_M77", key:"R16_M89",
-      optionsA:["Germany","Paraguay"], optionsB:["France","Sweden"] },
-    { round:"Round of 16", date:"Sunday 5 July 2026", time:"21:00", teamA:"Winner R32_M76", teamB:"Winner R32_M78", key:"R16_M91",
-      optionsA:["Brazil","Japan"], optionsB:["Ivory Coast","Norway"] },
-    { round:"Round of 16", date:"Monday 6 July 2026", time:"01:00", teamA:"Winner R32_M79", teamB:"Winner R32_M80", key:"R16_M92",
-      optionsA:["Mexico","Ecuador"], optionsB:["England","DR Congo"] },
-    { round:"Round of 16", date:"Monday 6 July 2026", time:"20:00", teamA:"Winner R32_M83", teamB:"Winner R32_M84", key:"R16_M93",
-      optionsA:["Portugal","Croatia"], optionsB:["Spain","Austria"] },
-    { round:"Round of 16", date:"Tuesday 7 July 2026", time:"01:00", teamA:"Winner R32_M81", teamB:"Winner R32_M82", key:"R16_M94",
-      optionsA:["United States","Bosnia and Herzegovina"], optionsB:["Belgium","Senegal"] },
-    { round:"Round of 16", date:"Tuesday 7 July 2026", time:"17:00", teamA:"Winner R32_M86", teamB:"Winner R32_M88", key:"R16_M95",
-      optionsA:["Argentina","Cape Verde"], optionsB:["Australia","Egypt"] },
-    { round:"Round of 16", date:"Tuesday 7 July 2026", time:"21:00", teamA:"Winner R32_M85", teamB:"Winner R32_M87", key:"R16_M96",
-      optionsA:["Switzerland","Algeria"], optionsB:["Colombia","Ghana"] },
-
-    // Quarter-Finals — teams TBC until Round of 16 completes
-    { round:"Quarter-Final", date:"Thursday 9 July 2026", time:"21:00", teamA:"Winner R16_M89", teamB:"Winner R16_M90", key:"QF_M97",
-      optionsA:["Germany","Paraguay","France","Sweden"], optionsB:["South Africa","Canada","Netherlands","Morocco"] },
-    { round:"Quarter-Final", date:"Friday 10 July 2026", time:"20:00", teamA:"Winner R16_M93", teamB:"Winner R16_M94", key:"QF_M98",
-      optionsA:["Portugal","Croatia","Spain","Austria"], optionsB:["United States","Bosnia and Herzegovina","Belgium","Senegal"] },
-    { round:"Quarter-Final", date:"Saturday 11 July 2026", time:"22:00", teamA:"Winner R16_M91", teamB:"Winner R16_M92", key:"QF_M99",
-      optionsA:["Brazil","Japan","Ivory Coast","Norway"], optionsB:["Mexico","Ecuador","England","DR Congo"] },
-    { round:"Quarter-Final", date:"Sunday 12 July 2026", time:"02:00", teamA:"Winner R16_M95", teamB:"Winner R16_M96", key:"QF_M100",
-      optionsA:["Argentina","Cape Verde","Australia","Egypt"], optionsB:["Switzerland","Algeria","Colombia","Ghana"] },
-
-    // Semi-Finals — teams TBC until Quarter-Finals complete
-    { round:"Semi-Final", date:"Tuesday 14 July 2026", time:"20:00", teamA:"Winner QF_M97", teamB:"Winner QF_M98", key:"SF_M101",
-      optionsA:["Germany","Paraguay","France","Sweden","South Africa","Canada","Netherlands","Morocco"],
-      optionsB:["Portugal","Croatia","Spain","Austria","United States","Bosnia and Herzegovina","Belgium","Senegal"] },
-    { round:"Semi-Final", date:"Wednesday 15 July 2026", time:"20:00", teamA:"Winner QF_M99", teamB:"Winner QF_M100", key:"SF_M102",
-      optionsA:["Brazil","Japan","Ivory Coast","Norway","Mexico","Ecuador","England","DR Congo"],
-      optionsB:["Argentina","Cape Verde","Australia","Egypt","Switzerland","Algeria","Colombia","Ghana"] },
-
-    // Third Place Playoff — teams TBC until Semi-Finals complete (losers play)
-    { round:"Third Place Playoff", date:"Saturday 18 July 2026", time:"22:00", teamA:"Loser SF_M101", teamB:"Loser SF_M102", key:"P3_M103",
-      optionsA:["Germany","Paraguay","France","Sweden","South Africa","Canada","Netherlands","Morocco","Portugal","Croatia","Spain","Austria","United States","Bosnia and Herzegovina","Belgium","Senegal"],
-      optionsB:["Brazil","Japan","Ivory Coast","Norway","Mexico","Ecuador","England","DR Congo","Argentina","Cape Verde","Australia","Egypt","Switzerland","Algeria","Colombia","Ghana"] },
-
-    // Final — teams TBC until Semi-Finals complete (winners play)
-    { round:"Final", date:"Sunday 19 July 2026", time:"20:00", teamA:"Winner SF_M101", teamB:"Winner SF_M102", key:"FINAL_M104",
-      optionsA:["Germany","Paraguay","France","Sweden","South Africa","Canada","Netherlands","Morocco","Portugal","Croatia","Spain","Austria","United States","Bosnia and Herzegovina","Belgium","Senegal"],
-      optionsB:["Brazil","Japan","Ivory Coast","Norway","Mexico","Ecuador","England","DR Congo","Argentina","Cape Verde","Australia","Egypt","Switzerland","Algeria","Colombia","Ghana"] }
-];
-
-function buildKnockoutManager(data){
-
-    const knockout = data.knockout || {};
-    let html = "";
-    let currentRound = "";
-
-    KNOCKOUT_FIXTURES.forEach(match => {
-
-        if(match.round !== currentRound){
-            html += `<div style="margin:20px 0 8px;font-size:1.1em;"><strong>🏆 ${match.round}</strong></div>`;
-            currentRound = match.round;
-        }
-
-        const saved = knockout[match.key] || {};
-        const isConfirmedA = !match.optionsA;
-        const isConfirmedB = !match.optionsB;
-
-        // Resolve the actual team name: either confirmed, or saved selection, or blank
-        const teamAName = isConfirmedA ? match.teamA : (saved.teamA || "");
-        const teamBName = isConfirmedB ? match.teamB : (saved.teamB || "");
-
-        const teamASelectHTML = isConfirmedA
-            ? `<strong>${match.teamA}</strong>`
-            : `<select class="ko-team-select" id="ko-teamA-${match.key}">
-                 <option value="">Select Team (${match.teamA})</option>
-                 ${match.optionsA.map(t => `<option value="${t}" ${saved.teamA === t ? "selected" : ""}>${t}</option>`).join("")}
-               </select>`;
-
-        const teamBSelectHTML = isConfirmedB
-            ? `<strong>${match.teamB}</strong>`
-            : `<select class="ko-team-select" id="ko-teamB-${match.key}">
-                 <option value="">Select Team (${match.teamB})</option>
-                 ${match.optionsB.map(t => `<option value="${t}" ${saved.teamB === t ? "selected" : ""}>${t}</option>`).join("")}
-               </select>`;
+        }).join("");
 
         html += `
-        <div class="knockout-row">
-            <div class="ko-date">📅 ${match.date} — ⏰ ${match.time} UK Time</div>
-            <div class="ko-teams">
-                ${teamASelectHTML}
-                <span>vs</span>
-                ${teamBSelectHTML}
+        <div class="player-card">
+            <div class="player-card-header">
+                ${photo ? `<img src="${photo}" style="width:50px;height:50px;border-radius:50%;object-fit:cover;">` : ""}
+                <div class="player-card-info">
+                    <strong><span class="rank-badge">${rank}</span> ${player.name}</strong><br>
+                    <span class="player-total-points">${pts} points total</span>
+                </div>
             </div>
-            <div class="ko-score-inputs">
-                <span>Score:</span>
-                <input type="number" min="0" max="99" id="ko-scoreA-${match.key}" value="${saved.scoreA ?? ""}" placeholder="0">
-                <span>-</span>
-                <input type="number" min="0" max="99" id="ko-scoreB-${match.key}" value="${saved.scoreB ?? ""}" placeholder="0">
-            </div>
-            <div style="margin-top:8px;">
-                <select class="ko-winner-select" id="ko-winner-${match.key}">
-                    <option value="" ${!saved.winner ? "selected" : ""}>Select Winner (advances)</option>
-                    ${teamAName ? `<option value="${teamAName}" ${saved.winner === teamAName ? "selected" : ""}>🏆 ${teamAName} Wins</option>` : ""}
-                    ${teamBName ? `<option value="${teamBName}" ${saved.winner === teamBName ? "selected" : ""}>🏆 ${teamBName} Wins</option>` : ""}
-                </select>
-            </div>
+            ${teamRows}
         </div>`;
 
     });
 
-    document.getElementById("knockoutManager").innerHTML = html;
-}
-
-function collectKnockoutScores(){
-
-    const knockout = {};
-
-    KNOCKOUT_FIXTURES.forEach(match => {
-
-        const teamASelect = document.getElementById(`ko-teamA-${match.key}`);
-        const teamBSelect = document.getElementById(`ko-teamB-${match.key}`);
-
-        const teamA = teamASelect ? teamASelect.value : match.teamA;
-        const teamB = teamBSelect ? teamBSelect.value : match.teamB;
-
-        const scoreA = document.getElementById(`ko-scoreA-${match.key}`)?.value;
-        const scoreB = document.getElementById(`ko-scoreB-${match.key}`)?.value;
-        const winner = document.getElementById(`ko-winner-${match.key}`)?.value;
-
-        if(teamA || teamB || scoreA !== "" || scoreB !== "" || winner !== ""){
-            knockout[match.key] = {
-                round: match.round,
-                date: match.date,
-                time: match.time,
-                teamA: teamA || null,
-                teamB: teamB || null,
-                scoreA: scoreA !== "" ? parseInt(scoreA) : null,
-                scoreB: scoreB !== "" ? parseInt(scoreB) : null,
-                winner: winner || null
-            };
-        }
-
-    });
-
-    return knockout;
+    document.getElementById("fullTable").innerHTML = html;
 }
 
 // ----------------------
-// Page Init
+// Init
 // ----------------------
 
 loadData().then(data => {
 
-    document.getElementById("tournamentMessage").value =
-        data.tournamentMessage || "";
+    const { playerPoints, teamPoints } = calcPoints(data.players, data.scores, data.knockout);
+    const ranked = rankPlayers(data.players, playerPoints);
 
-    buildStatusManager(data);
-    buildScoresManager(data);
-    buildKnockoutManager(data);
-
-    if(data.drawLocked){
-        const button = document.getElementById("drawButton");
-        button.innerHTML = "🔒 Draw Locked";
-        button.disabled = true;
-    }
-
-    if(data.players && data.players.length > 0){
-        renderDraw(data.players);
-    }
+    buildPodium(ranked, playerPoints, teamPoints);
+    buildTable(ranked, playerPoints, teamPoints);
 
 });
-
-// ----------------------
-// Generate Draw
-// ----------------------
-
-window.generateTournamentDraw = async function(){
-
-    const data = await loadData();
-    const names = document.getElementById("participants")
-        .value.split("\n").map(n=>n.trim()).filter(n=>n);
-
-    if(names.length < 2){
-        alert("Please enter at least 2 participants");
-        return;
-    }
-
-    const players = names.map(name=>({ name, photo:"", teams:[] }));
-    const teams = data.teams.map(team=>({
-        name:team.name, flag:team.flag, group:team.group, status:"🟢 Active"
-    }));
-
-    generateDraw(players, teams);
-
-    tournamentData = data;
-    tournamentData.players = players;
-    tournamentData.drawLocked = true;
-
-    renderDraw(players);
-
-    document.getElementById("drawButton").innerHTML = "🔒 Draw Locked";
-    document.getElementById("drawButton").disabled = true;
-
-    alert("Official draw generated and locked!");
-}
-
-// ----------------------
-// Render Draw
-// ----------------------
-
-function renderDraw(players){
-
-    let html = "";
-
-    players.forEach(player=>{
-        html += `<div class="player-result"><h3>${player.name}</h3>`;
-        player.teams.forEach(team=>{
-            html += `<div>${team.flag} ${team.name} (Group ${team.group})</div>`;
-        });
-        html += `</div>`;
-    });
-
-    document.getElementById("drawOutput").innerHTML = html;
-}
-
-// ----------------------
-// Save Message
-// ----------------------
-
-window.saveMessage = async function(){
-
-    if(!tournamentData){
-        alert("Load data first");
-        return;
-    }
-
-    tournamentData.tournamentMessage =
-        document.getElementById("tournamentMessage").value;
-
-    await saveToFirebase();
-    showSaveStatus("✅ Message saved!");
-}
-
-// ----------------------
-// Build Status Manager
-// ----------------------
-
-function buildStatusManager(data){
-
-    let html = "";
-
-    data.teams.forEach(team=>{
-
-        const currentStatus = getTeamStatus(team.name) || "🟢 Active";
-
-        html += `
-        <div class="status-row">
-            <div>${team.flag} ${team.name} (Group ${team.group})</div>
-            <select id="status-${team.name}">
-                ${data.statuses.map(status=>`
-                    <option value="${status}" ${status === currentStatus ? "selected" : ""}>
-                        ${status}
-                    </option>
-                `).join("")}
-            </select>
-        </div>`;
-
-    });
-
-    document.getElementById("statusManager").innerHTML = html;
-}
-
-function getTeamStatus(teamName){
-
-    if(!tournamentData || !tournamentData.players) return null;
-
-    for(const player of tournamentData.players){
-        const team = player.teams.find(t => t.name === teamName);
-        if(team) return team.status;
-    }
-
-    return null;
-}
-
-// ----------------------
-// Save Tournament
-// ----------------------
-
-window.saveTournament = async function(){
-
-    if(!tournamentData){
-        alert("Load data first");
-        return;
-    }
-
-    tournamentData.tournamentMessage =
-        document.getElementById("tournamentMessage").value;
-
-    const statusMap = {};
-
-    tournamentData.teams.forEach(team=>{
-        const select = document.getElementById(`status-${team.name}`);
-        if(select){ statusMap[team.name] = select.value; }
-    });
-
-    tournamentData.players.forEach(player=>{
-        player.teams.forEach(team=>{
-            if(statusMap[team.name]){
-                team.status = statusMap[team.name];
-            }
-        });
-    });
-
-    tournamentData.scores = collectScores();
-    tournamentData.knockout = collectKnockoutScores();
-
-    await saveToFirebase();
-    showSaveStatus("✅ Saved! All users will see updates instantly.");
-}
-
-// ----------------------
-// Unlock Draw
-// ----------------------
-
-window.unlockDraw = async function(){
-
-    if(!confirm("Unlock draw and allow a redraw?")) return;
-
-    tournamentData.drawLocked = false;
-
-    await saveToFirebase();
-
-    const button = document.getElementById("drawButton");
-    button.disabled = false;
-    button.innerHTML = "🎲 Generate Draw";
-
-    alert("Draw unlocked successfully");
-}
-
-// ----------------------
-// Download data.json
-// ----------------------
-
-window.downloadDataFile = function(){
-
-    if(!tournamentData){
-        alert("Load data first");
-        return;
-    }
-
-    const json = JSON.stringify(tournamentData, null, 2);
-    const blob = new Blob([json], {type:"application/json"});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "data.json";
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-}
-
-// ----------------------
-// Save Status Indicator
-// ----------------------
-
-function showSaveStatus(message){
-    const el = document.getElementById("saveStatus");
-    el.innerText = message;
-    setTimeout(()=>{ el.innerText = ""; }, 3000);
-}
 
 </script>
 
